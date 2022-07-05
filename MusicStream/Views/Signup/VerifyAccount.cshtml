@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Http
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!-- main content -->
+<main class="main">
+    <div class="container-fluid">
+        <div class="row row--grid">
+            <!-- breadcrumb -->
+            <div class="col-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Đăng ký</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb -->
+            <!-- registration form -->
+            <div class="col-12">
+                <div class="sign">
+                    <div class="sign__content">
+                        <form action="/signup/verify-account" method="post" class="sign__form">
+                            <a href="/" class="sign__logo">
+                                <img src="~/img/logo/logo.png" alt="">
+                            </a>
+
+                            <h5 style="color: white">
+                                Mã xác minh đã được gửi đến email của bạn. Mã sẽ hết hạn sau 5 phút.
+                            </h5>
+                            <div class="sign__group">
+                                <input type="text" class="sign__input" name="VerifyCode" required placeholder="Code">
+                            </div>
+                            @if (ViewData["Message"] != null)
+                            {
+                                <div class="text-center">
+                                    <p style="color: white">
+                                        @ViewData["Message"]
+                                    </p>
+                                </div>
+                            }
+                            <button class="sign__btn" type="submit">Xác minh</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- end registration form -->
+
+        </div>
+    </div>
+</main>
+<!-- end main content -->
+@section Scripts {
+<script>
+    setTimeout(() => {
+        window.location.pathname = "/signup/";
+    }, 300000)
+</script>
+}
