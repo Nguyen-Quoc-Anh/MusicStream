@@ -1,4 +1,5 @@
-﻿using MusicStream.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using MusicStream.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,6 +13,13 @@ namespace MusicStream.Controllers.Logic
             {
                 return context.Genres.ToList();
             }
+        }
+
+        public static MultiSelectList GetAllGenresAsMultiSelectList()
+        {
+            var genres = GetAllGenres();
+            var multiSelectList = new MultiSelectList(genres, "GenreId", "Name");
+            return multiSelectList;
         }
     }
 }

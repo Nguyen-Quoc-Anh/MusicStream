@@ -9,6 +9,7 @@ using static MusicStream.Controllers.Logic.TrackLogic;
 using static MusicStream.Controllers.Logic.ArtistLogic;
 using static MusicStream.Controllers.Logic.AlbumLogic;
 using static MusicStream.Controllers.Logic.GenreLogic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MusicStreamingver1.Controllers
 {
@@ -34,12 +35,11 @@ namespace MusicStreamingver1.Controllers
             return View("Index");
         }
 
-        public IActionResult Search(string key, string sortby)
+        public IActionResult Search(string key, string sortby, string[] genres, string[] artists)
         {
-            List<Genre> genres = GetAllGenres();
             List<Account> artist = GetAllArtist();
             ViewData["artists"] = artist;
-            ViewData["genres"] = genres;
+            ViewData["genres"] = GetAllGenresAsMultiSelectList();
             return View();
         }
 
