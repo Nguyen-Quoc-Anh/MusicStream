@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MusicStream.Controllers.Logic;
 using MusicStream.Models;
 using Newtonsoft.Json;
+using System;
 
 namespace MusicStream.Controllers
 {
@@ -24,7 +25,9 @@ namespace MusicStream.Controllers
             {
                 if (Remember != null)
                 {
-                    Response.Cookies.Append("account", account.AccountId);
+                    CookieOptions cookie = new CookieOptions();
+                    cookie.Expires = DateTime.Now.AddMonths(1);
+                    Response.Cookies.Append("account", account.AccountId, cookie);
                 }
                 HttpContext.Session.SetString("account", JsonConvert.SerializeObject(account));
                 return Redirect("/");

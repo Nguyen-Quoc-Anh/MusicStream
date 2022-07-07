@@ -1,14 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MusicStream.Logic;
 using MusicStream.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using X.PagedList;
 using static MusicStream.Controllers.Logic.AccountLogic;
-
+using static MusicStream.Controllers.Logic.TrackLogic;
 namespace MusicStream.Controllers
 {
     [Route("account")]
@@ -47,7 +52,7 @@ namespace MusicStream.Controllers
                 Account account = new Account();
                 account.AccountId = id;
                 account.Email = email;
-                account.RoleId = 3;
+                account.RoleId = 2;
                 account.Password = "";
 
                 account.Fullname = name;
@@ -60,5 +65,19 @@ namespace MusicStream.Controllers
             }
         }
 
+        [Route("favourite-song")]
+        public IActionResult FavouriteSong(int page)
+        {
+            int pageNumber = page;
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            List<Track> tracksList = GetFavouriteListTrack(account.AccountId);
+
+            page = page < 1 ? 1 : page;
+            return View("FavouriteSong", tracksList.ToPagedList<Track>(pageNumber: page, pageSize: 12));
+        }
     }
 }

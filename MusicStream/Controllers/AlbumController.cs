@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicStream.Models;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using static MusicStream.Controllers.Logic.AlbumLogic;
 using static MusicStream.Controllers.Logic.TrackLogic;
@@ -9,22 +10,28 @@ namespace MusicStream.Controllers
     {
         public IActionResult Detail(string id)
         {
-            Dictionary<Album, List<Account>> album = GetAlbumDetails(id);
+            Album album = GetAlbumDetails(id);
             if (album == null)
             {
                 return NotFound();
             }
-            Dictionary<Track, List<Account>> tracks = GetTrackByAlbum(id);
-            Dictionary<Album, List<Account>> recommendAlbum = GetRandomAlbum(6);
+            Dictionary<Album, List<Artist>> recommendAlbum = GetRandomAlbum(6);
             ViewData["album"] = album;
-            ViewData["tracks"] = tracks;
             ViewData["recommendAlbum"] = recommendAlbum;
-            return View();
+            return View(album);
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public string AddToWishList(string id)
+        {
+            List<Track> tracks = GetTrackListByAlbum(id);
+            var settings = new Newtonsoft.Json.JsonSerializerSettings();
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            return JsonConvert.SerializeObject(tracks, settings);
         }
     }
 }

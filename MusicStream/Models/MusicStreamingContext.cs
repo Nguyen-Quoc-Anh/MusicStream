@@ -21,9 +21,9 @@ namespace MusicStream.Models
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Album> Albums { get; set; }
         public virtual DbSet<AlbumGenre> AlbumGenres { get; set; }
+        public virtual DbSet<Artist> Artists { get; set; }
         public virtual DbSet<ArtistAlbum> ArtistAlbums { get; set; }
         public virtual DbSet<ArtistTrack> ArtistTracks { get; set; }
-        public virtual DbSet<Class> Classes { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
         public virtual DbSet<GenreOfTrack> GenreOfTracks { get; set; }
@@ -53,8 +53,6 @@ namespace MusicStream.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("accountID");
-
-                entity.Property(e => e.Description).HasColumnName("description");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -114,7 +112,7 @@ namespace MusicStream.Models
             modelBuilder.Entity<AlbumGenre>(entity =>
             {
                 entity.HasKey(e => new { e.GenreId, e.AlbumId })
-                    .HasName("PK__AlbumGen__DB0F854C35709862");
+                    .HasName("PK__AlbumGen__DB0F854CC78EC768");
 
                 entity.ToTable("AlbumGenre");
 
@@ -132,90 +130,94 @@ namespace MusicStream.Models
                     .WithMany(p => p.AlbumGenres)
                     .HasForeignKey(d => d.AlbumId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__AlbumGenr__album__3B75D760");
+                    .HasConstraintName("FK__AlbumGenr__album__3D5E1FD2");
 
                 entity.HasOne(d => d.Genre)
                     .WithMany(p => p.AlbumGenres)
                     .HasForeignKey(d => d.GenreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__AlbumGenr__genre__3A81B327");
+                    .HasConstraintName("FK__AlbumGenr__genre__3C69FB99");
+            });
+
+            modelBuilder.Entity<Artist>(entity =>
+            {
+                entity.ToTable("Artist");
+
+                entity.Property(e => e.ArtistId)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("artistID");
+
+                entity.Property(e => e.Description).HasColumnName("description");
+
+                entity.Property(e => e.Fullname)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnName("fullname");
+
+                entity.Property(e => e.Image)
+                    .IsRequired()
+                    .HasColumnName("image");
             });
 
             modelBuilder.Entity<ArtistAlbum>(entity =>
             {
-                entity.HasKey(e => new { e.AccountId, e.AlbumId })
-                    .HasName("PK__Artist_A__153CD6D01ED4A575");
+                entity.HasKey(e => new { e.ArtistId, e.AlbumId })
+                    .HasName("PK__Artist_A__A81860891585FFE5");
 
                 entity.ToTable("Artist_Album");
 
-                entity.Property(e => e.AccountId)
+                entity.Property(e => e.ArtistId)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("accountID");
+                    .HasColumnName("artistID");
 
                 entity.Property(e => e.AlbumId)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("albumID");
 
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.ArtistAlbums)
-                    .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Artist_Al__accou__2C3393D0");
-
                 entity.HasOne(d => d.Album)
                     .WithMany(p => p.ArtistAlbums)
                     .HasForeignKey(d => d.AlbumId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Artist_Al__album__2D27B809");
+                    .HasConstraintName("FK__Artist_Al__album__2F10007B");
+
+                entity.HasOne(d => d.Artist)
+                    .WithMany(p => p.ArtistAlbums)
+                    .HasForeignKey(d => d.ArtistId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Artist_Al__artis__2E1BDC42");
             });
 
             modelBuilder.Entity<ArtistTrack>(entity =>
             {
-                entity.HasKey(e => new { e.AccountId, e.TrackId })
-                    .HasName("PK__ArtistTr__C73C7AA52B5E12FF");
+                entity.HasKey(e => new { e.ArtistId, e.TrackId })
+                    .HasName("PK__ArtistTr__7A18CCFC8FD131C3");
 
                 entity.ToTable("ArtistTrack");
 
-                entity.Property(e => e.AccountId)
+                entity.Property(e => e.ArtistId)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("accountID");
+                    .HasColumnName("artistID");
 
                 entity.Property(e => e.TrackId)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("trackID");
 
-                entity.HasOne(d => d.Account)
+                entity.HasOne(d => d.Artist)
                     .WithMany(p => p.ArtistTracks)
-                    .HasForeignKey(d => d.AccountId)
+                    .HasForeignKey(d => d.ArtistId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ArtistTra__accou__34C8D9D1");
+                    .HasConstraintName("FK__ArtistTra__artis__36B12243");
 
                 entity.HasOne(d => d.Track)
                     .WithMany(p => p.ArtistTracks)
                     .HasForeignKey(d => d.TrackId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ArtistTra__track__35BCFE0A");
-            });
-
-            modelBuilder.Entity<Class>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.Property(e => e.ClassId)
-                    .HasMaxLength(10)
-                    .IsUnicode(false)
-                    .HasColumnName("classID")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.ClassName)
-                    .HasMaxLength(15)
-                    .IsUnicode(false)
-                    .HasColumnName("className")
-                    .IsFixedLength(true);
+                    .HasConstraintName("FK__ArtistTra__track__37A5467C");
             });
 
             modelBuilder.Entity<Comment>(entity =>
@@ -253,18 +255,18 @@ namespace MusicStream.Models
                     .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Comment__account__4D94879B");
+                    .HasConstraintName("FK__Comment__account__4F7CD00D");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)
                     .HasForeignKey(d => d.ParentId)
-                    .HasConstraintName("FK__Comment__parentI__4F7CD00D");
+                    .HasConstraintName("FK__Comment__parentI__5165187F");
 
                 entity.HasOne(d => d.Track)
                     .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.TrackId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Comment__trackID__4E88ABD4");
+                    .HasConstraintName("FK__Comment__trackID__5070F446");
             });
 
             modelBuilder.Entity<Genre>(entity =>
@@ -285,7 +287,7 @@ namespace MusicStream.Models
             modelBuilder.Entity<GenreOfTrack>(entity =>
             {
                 entity.HasKey(e => new { e.GenreId, e.TrackId })
-                    .HasName("PK__GenreOfT__090F2939EFED0A2B");
+                    .HasName("PK__GenreOfT__090F2939B7BF002A");
 
                 entity.ToTable("GenreOfTrack");
 
@@ -303,19 +305,19 @@ namespace MusicStream.Models
                     .WithMany(p => p.GenreOfTracks)
                     .HasForeignKey(d => d.GenreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GenreOfTr__genre__3E52440B");
+                    .HasConstraintName("FK__GenreOfTr__genre__403A8C7D");
 
                 entity.HasOne(d => d.Track)
                     .WithMany(p => p.GenreOfTracks)
                     .HasForeignKey(d => d.TrackId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GenreOfTr__track__3F466844");
+                    .HasConstraintName("FK__GenreOfTr__track__412EB0B6");
             });
 
             modelBuilder.Entity<LikeTrack>(entity =>
             {
                 entity.HasKey(e => new { e.AccountId, e.TrackId })
-                    .HasName("PK__LikeTrac__C73C7AA5DA4DD92B");
+                    .HasName("PK__LikeTrac__C73C7AA5FFF3FF31");
 
                 entity.ToTable("LikeTrack");
 
@@ -333,19 +335,19 @@ namespace MusicStream.Models
                     .WithMany(p => p.LikeTracks)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__LikeTrack__accou__4AB81AF0");
+                    .HasConstraintName("FK__LikeTrack__accou__4CA06362");
 
                 entity.HasOne(d => d.Track)
                     .WithMany(p => p.LikeTracks)
                     .HasForeignKey(d => d.TrackId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__LikeTrack__track__49C3F6B7");
+                    .HasConstraintName("FK__LikeTrack__track__4BAC3F29");
             });
 
             modelBuilder.Entity<PlayListTrack>(entity =>
             {
                 entity.HasKey(e => new { e.PlaylistId, e.TrackId })
-                    .HasName("PK__PlayList__E0714E9D7371A5D0");
+                    .HasName("PK__PlayList__E0714E9D0FBA73F5");
 
                 entity.ToTable("PlayListTrack");
 
@@ -362,13 +364,13 @@ namespace MusicStream.Models
                     .WithMany(p => p.PlayListTracks)
                     .HasForeignKey(d => d.PlaylistId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PlayListT__playl__45F365D3");
+                    .HasConstraintName("FK__PlayListT__playl__47DBAE45");
 
                 entity.HasOne(d => d.Track)
                     .WithMany(p => p.PlayListTracks)
                     .HasForeignKey(d => d.TrackId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PlayListT__track__46E78A0C");
+                    .HasConstraintName("FK__PlayListT__track__48CFD27E");
             });
 
             modelBuilder.Entity<Playlist>(entity =>
@@ -402,7 +404,7 @@ namespace MusicStream.Models
                     .WithMany(p => p.Playlists)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Playlist__accoun__4222D4EF");
+                    .HasConstraintName("FK__Playlist__accoun__440B1D61");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -456,7 +458,7 @@ namespace MusicStream.Models
                     .WithMany(p => p.Tracks)
                     .HasForeignKey(d => d.AlbumId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Track__albumID__30F848ED");
+                    .HasConstraintName("FK__Track__albumID__32E0915F");
             });
 
             OnModelCreatingPartial(modelBuilder);

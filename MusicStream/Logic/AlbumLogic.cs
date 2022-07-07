@@ -7,62 +7,52 @@ namespace MusicStream.Controllers.Logic
 {
     public class AlbumLogic
     {
-        public static Dictionary<Album, List<Account>> GetFeatureAlbum()
+        public static Dictionary<Album, List<Artist>> GetFeatureAlbum()
         {
-            Dictionary<Album, List<Account>> albums = new Dictionary<Album, List<Account>>();
+            Dictionary<Album, List<Artist>> albums = new Dictionary<Album, List<Artist>>();
             using (var context = new MusicStreamingContext())
             {
                 List<Album> albumList = context.Albums.OrderByDescending(al => al.ReleaseDate).Take(12).ToList();
 
                 albumList.ForEach(album =>
                 {
-                    List<Account> Accounts = new List<Account>();
-                    Accounts = context.Accounts.Join(context.ArtistAlbums.Where(at => at.AlbumId == album.AlbumId),
-                        t => t.AccountId,
-                        a => a.AccountId,
+                    List<Artist> Artists = new List<Artist>();
+                    Artists = context.Artists.Join(context.ArtistAlbums.Where(at => at.AlbumId == album.AlbumId),
+                        t => t.ArtistId,
+                        a => a.ArtistId,
                         (t, a) => t
                         ).ToList();
-                    albums.Add(album, Accounts);
+                    albums.Add(album, Artists);
                 });
             }
             return albums;
         }
 
-        public static Dictionary<Album, List<Account>> GetAlbumDetails(string id)
+        public static Album GetAlbumDetails(string id)
         {
-            Dictionary<Album, List<Account>> albums = new Dictionary<Album, List<Account>>();
             using (var context = new MusicStreamingContext())
             {
-                Album album = context.Albums.FirstOrDefault(a => a.AlbumId.Equals(id));
-                if (album == null) return null;
-
-                List<Account> Accounts = new List<Account>();
-                Accounts = context.Accounts.Join(context.ArtistAlbums.Where(at => at.AlbumId == album.AlbumId),
-                    t => t.AccountId,
-                    a => a.AccountId,
-                    (t, a) => t
-                    ).ToList();
-                albums.Add(album, Accounts);
+                return context.Albums.Include(a => a.Tracks).ThenInclude(a => a.ArtistTracks).ThenInclude(a => a.Artist)
+                    .Include(a => a.ArtistAlbums).ThenInclude(a => a.Artist).FirstOrDefault(a => a.AlbumId == id);
             }
-            return albums;
         }
 
-        public static Dictionary<Album, List<Account>> GetRandomAlbum(int number)
+        public static Dictionary<Album, List<Artist>> GetRandomAlbum(int number)
         {
-            Dictionary<Album, List<Account>> albums = new Dictionary<Album, List<Account>>();
+            Dictionary<Album, List<Artist>> albums = new Dictionary<Album, List<Artist>>();
             using (var context = new MusicStreamingContext())
             {
                 List<Album> albumList = context.Albums.ToList().PickRandom(number).ToList();
 
                 albumList.ForEach(album =>
                 {
-                    List<Account> Accounts = new List<Account>();
-                    Accounts = context.Accounts.Join(context.ArtistAlbums.Where(at => at.AlbumId == album.AlbumId),
-                        t => t.AccountId,
-                        a => a.AccountId,
+                    List<Artist> Artists = new List<Artist>();
+                    Artists = context.Artists.Join(context.ArtistAlbums.Where(at => at.AlbumId == album.AlbumId),
+                        t => t.ArtistId,
+                        a => a.ArtistId,
                         (t, a) => t
                         ).ToList();
-                    albums.Add(album, Accounts);
+                    albums.Add(album, Artists);
                 });
             }
             return albums;
@@ -72,8 +62,8 @@ namespace MusicStream.Controllers.Logic
         {
             using (var context = new MusicStreamingContext())
             {
-                List<Album> albumList = context.Albums.Include(a => a.ArtistAlbums).ThenInclude(a => a.Account)
-                    .Where(a => a.ArtistAlbums.Any(al => al.AccountId == id)).ToList();
+                List<Album> albumList = context.Albums.Include(a => a.ArtistAlbums).ThenInclude(a => a.Artist)
+                    .Where(a => a.ArtistAlbums.Any(al => al.ArtistId == id)).ToList();
                 return albumList;
             }
         }

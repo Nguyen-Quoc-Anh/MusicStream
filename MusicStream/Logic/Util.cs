@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using MusicStream.Models;
+using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using static MusicStream.Controllers.Logic.AccountLogic;
 
 namespace MusicStream.Logic
 {
@@ -32,6 +36,22 @@ namespace MusicStream.Logic
             return BitConverter.ToString(encodedBytes);
         }
 
-
+        public static Account CheckLogged(HttpContext context, HttpRequest request)
+        {
+            if (context.Session.GetString("account") == null)
+            {
+                if (request.Cookies["account"] == null)
+                {
+                    Account account = GetAccountById(request.Cookies["account"]);
+                    if (account != null)
+                    {
+                        context.Session.SetString("account", JsonConvert.SerializeObject(account));
+                    }
+                    return account;
+                }
+                return null;
+            }
+            return JsonConvert.DeserializeObject<Account>(context.Session.GetString("account"));
+        }
     }
 }

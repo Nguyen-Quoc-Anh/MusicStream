@@ -3,7 +3,7 @@
 *@
 @{
 }
-@model MusicStream.Models.Account
+@model MusicStream.Models.Artist
 <!-- main content -->
 <main class="main">
     <div class="container-fluid">
@@ -54,7 +54,7 @@
                             <span>
                                 @foreach (var artist in album.ArtistAlbums)
                                 {
-                                    <a href="/artist/detail/@artist.AccountId">@artist.Account.Fullname</a> @(album.ArtistAlbums.ToList().IndexOf(artist) != album.ArtistAlbums.Count() - 1 ? "&" : "")
+                                    <a href="/artist/detail/@artist.ArtistId">@artist.Artist.Fullname</a> @(album.ArtistAlbums.ToList().IndexOf(artist) != album.ArtistAlbums.Count() - 1 ? "&" : "")
                                 }
                             </span>
                         </div>
@@ -76,9 +76,9 @@
             <div class="col-12">
                 <div class="main__carousel-wrap">
                     <div class="main__carousel main__carousel--artists owl-carousel" id="artists">
-                        @foreach (Account artist in (List<Account>)ViewData["artists"])
+                        @foreach (Artist artist in (List<Artist>)ViewData["artists"])
                         {
-                            <a href="/artist/detail/@artist.AccountId" class="artist">
+                            <a href="/artist/detail/@artist.ArtistId" class="artist">
                                 <div class="artist__cover">
                                     <img src="@artist.Image" alt="">
                                 </div>

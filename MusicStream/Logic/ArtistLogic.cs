@@ -1,4 +1,5 @@
-﻿using MusicStream.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using MusicStream.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,30 +8,37 @@ namespace MusicStream.Controllers.Logic
 {
     public class ArtistLogic
     {
-        public static List<Account> GetFeatureArtists()
+        public static List<Artist> GetFeatureArtists()
         {
-            List<Account> Accounts = new List<Account>();
+            List<Artist> Artists = new List<Artist>();
             using (var context = new MusicStreamingContext())
             {
-                Accounts = context.Accounts.ToList().PickRandom(10).ToList();
+                Artists = context.Artists.ToList().PickRandom(10).ToList();
             }
-            return (Accounts.Count < 10) ? Accounts : Accounts.Take(10).ToList();
+            return (Artists.Count < 10) ? Artists : Artists.Take(10).ToList();
         }
 
-        public static Account GetArtistByID(string Id)
+        public static Artist GetArtistByID(string Id)
         {
             using (var context = new MusicStreamingContext())
             {
-                return context.Accounts.FirstOrDefault(a => a.AccountId == Id);
+                return context.Artists.FirstOrDefault(a => a.ArtistId == Id);
             }
         }
 
-        public static List<Account> GetAllArtist()
+        public static List<Artist> GetAllArtist()
         {
             using (var context = new MusicStreamingContext())
             {
-                return context.Accounts.Where(a => a.RoleId == 2).ToList();
+                return context.Artists.ToList();
             }
+        }
+
+        public static MultiSelectList GetAllArtistAsMultiSelectList()
+        {
+            var artists = GetAllArtist();
+            var multiSelectList = new MultiSelectList(artists, "ArtistId", "Fullname");
+            return multiSelectList;
         }
     }
 

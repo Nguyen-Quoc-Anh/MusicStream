@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using MusicStream.Models;
 using MusicStream.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,7 @@ namespace MusicStream
             // Đăng ký SendMailService với kiểu Transient, mỗi lần gọi dịch
             // vụ ISendMailService một đới tượng SendMailService tạo ra (đã inject config)
             services.AddTransient<ISendMailService, Services.MailService>();
+
 
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

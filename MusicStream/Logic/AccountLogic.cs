@@ -41,5 +41,13 @@ namespace MusicStream.Controllers.Logic
                 return context.Accounts.FirstOrDefault(a => a.Email.Equals(Email) && Util.EncodePassword(Password).Equals(a.Password));
             }
         }
+
+        public static Account GetAccountById(string Id)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Accounts.FirstOrDefault(a => a.AccountId == Id);
+            }
+        }
     }
 }

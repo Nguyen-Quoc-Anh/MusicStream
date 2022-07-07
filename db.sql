@@ -11,9 +11,16 @@ create table Account (
 	password nvarchar(100) not null,
 	roleID int references Role(roleID),
 	fullname nvarchar(100) not null,
+	image nvarchar(max) not null
+)
+
+create table Artist (
+	artistID varchar(50) primary key not null,
+	fullname nvarchar(100) not null,
 	image nvarchar(max) not null,
 	description nvarchar(max)
 )
+
 
 create table Album (
 	albumID varchar(50) primary key not null,
@@ -24,9 +31,9 @@ create table Album (
 )
 
 create table Artist_Album(
-	accountID varchar(50) references Account(accountID) not null,
+	artistID varchar(50) references Artist(artistID) not null,
 	albumID varchar(50) references Album(albumID) not null,
-	Primary key (accountID, albumID)
+	Primary key (artistID, albumID)
 )
 
 create table Track (
@@ -40,9 +47,9 @@ create table Track (
 )
 
 create table ArtistTrack(
-	accountID varchar(50) references Account(accountID) not null,
+	artistID varchar(50) references Artist(artistID) not null,
 	trackID varchar(50) references Track(trackID) not null,
-	Primary key (accountID, trackID)
+	Primary key (artistID, trackID)
 )
 
 create table Genre (
@@ -88,4 +95,4 @@ create table Comment(
 	trackID varchar(50) references Track(trackID) not null,
 	parentID varchar(50) references Comment(commentID)
 )
-insert into Role (name) values (N'Admin'), (N'Artist'), (N'User')
+insert into Role (name) values (N'Admin'), (N'User')

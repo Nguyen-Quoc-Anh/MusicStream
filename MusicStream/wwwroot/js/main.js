@@ -406,7 +406,7 @@
 				<input data-plyr="volume" type="range" min="0" max="1" step="0.05" value="1" autocomplete="off" aria-label="Volume">
 			</div>
 
-			<a href="release.html" class="plyr__control" aria-label="Playlist">
+			<a href="" id="playlist__controll" class="plyr__control" aria-label="Playlist">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15,13H9a1,1,0,0,0,0,2h6a1,1,0,0,0,0-2Zm0-4H9a1,1,0,0,0,0,2h6a1,1,0,0,0,0-2ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"/></svg>
 				<span class="plyr__tooltip" role="tooltip">Playlist</span>
 			</a>
@@ -438,8 +438,6 @@
     });
 
     function run(link, player) {
-        console.log(link);
-        console.log(player);
 
         if ($(link).hasClass('play')) {
             $(link).removeClass('play');
@@ -462,105 +460,203 @@
             let title = $(link).data('title');
             let artist = $(link).data('artist');
             let img = $(link).data('img');
+            let album = $(link).data('album');
+            $('#playlist__controll').attr('href', `/album/detail/${album}`);
             $('.player__title').text(title);
             $('.player__artist').text(artist);
             $('.player__cover img').attr('src', img);
             audio[0].load();
             audio[0].play();
+            var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
+            let trackObj = {};
+            trackObj["name"] = title;
+            trackObj["image"] = image;
+            trackObj["albumId"] = album;
+            trackObj["artist"] = artist;
+            trackObj["mp3"] = $(link).attr('href');
+            var wishlist = JSON.parse(sessionStorage.getItem("wishlist"));
+            if (wishlist) {
+                wishlist["items"].splice(current, 0, trackObj);
+            } else {
+                wishlist = {
+                    items: [].push(trackObj)
+                }
+            }
+            sessionStorage.setItem("wishlist", JSON.stringify(wishlist));
         }
         let src = document.getElementById("audio").src.split("/");
         var mp3Obj = {};
         mp3Obj["title"] = $(link).data('title');
         mp3Obj["artist"] = $(link).data('artist');
         mp3Obj["img"] = $(link).data('img');
+        mp3Obj["album"] = $(link).data('album');
         mp3Obj["mp3"] = `/${src[3]}/${src[4]}`;
         sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
     }
 
     /* playlist */
-    if ($('.main__list--playlist').length) {
-        var current = 0;
-        var playlist = $('.main__list--playlist');
-        var tracks = playlist.find('li a[data-playlist]');
-        var len = tracks.length;
+    //if ($('.main__list--playlist').length) {
+    //    var current = 0;
+    //    var playlist = $('.main__list--playlist');
+    //    var tracks = playlist.find('li a[data-playlist]');
+    //    var len = tracks.length;
 
-        playlist.find('a[data-playlist]').on('click', function (e) {
-            e.preventDefault();
-            let link = $(this);
-            current = link.parent().index();
-            run2(link, audio[0]);
-        });
+    //    playlist.find('a[data-playlist]').on('click', function (e) {
+    //        e.preventDefault();
+    //        let link = $(this);
+    //        current = link.parent().index();
+    //        run2(link, audio[0]);
+    //    });
 
+    //    player.on('ended', event => {
+    //        let link = $('.single-item__cover.play');
+    //        current++;
+    //        if (current == len) {
+    //            current = 0;
+    //            link = playlist.find('a[data-playlist]')[0];
+    //        } else {
+    //            link = playlist.find('a[data-playlist]')[current];
+    //        }
+    //        run2($(link), audio[0]);
+    //    });
+
+    //    $('.plyr__control--prev').on('click', function (e) {
+    //        let link = $('.single-item__cover.play');
+    //        current--;
+    //        if (current == -1) {
+    //            current = len - 1;
+    //            link = playlist.find('a[data-playlist]')[current];
+    //        } else {
+    //            link = playlist.find('a[data-playlist]')[current];
+    //        }
+    //        run2($(link), audio[0]);
+    //    });
+
+    //    $('.plyr__control--next').on('click', function (e) {
+    //        let link = $('.single-item__cover.play');
+    //        current++;
+    //        if (current == len) {
+    //            current = 0;
+    //            link = playlist.find('a[data-playlist]')[0];
+    //        } else {
+    //            link = playlist.find('a[data-playlist]')[current];
+    //        }
+    //        run2($(link), audio[0]);
+    //    });
+
+    //    function run2(link, player) {
+    //        if ($(link).hasClass('play')) {
+    //            $(link).removeClass('play');
+    //            audio[0].pause();
+    //            $(link).addClass('pause');
+    //        }
+    //        else if ($(link).hasClass('pause')) {
+    //            $(link).removeClass('pause');
+    //            audio[0].play();
+    //            $(link).addClass('play');
+    //        }
+    //        else {
+    //            $('a[data-playlist]').removeClass('active');
+    //            $('a[data-playlist]').removeClass('pause');
+    //            $('a[data-playlist]').removeClass('play');
+    //            $(link).addClass('active');
+    //            $(link).addClass('play');
+    //            player.src = $(link).attr('href');
+
+    //            let title = $(link).data('title');
+    //            let artist = $(link).data('artist');
+    //            let img = $(link).data('img');
+    //            $('.player__title').text(title);
+    //            $('.player__artist').text(artist);
+    //            $('.player__cover img').attr('src', img);
+    //            audio[0].load();
+    //            audio[0].play();
+    //        }
+    //        let src = document.getElementById("audio").src.split("/");
+    //        var mp3Obj = {};
+    //        mp3Obj["title"] = $(link).data('title');
+    //        mp3Obj["artist"] = $(link).data('artist');
+    //        mp3Obj["img"] = $(link).data('img');
+    //        mp3Obj["album"] = $(link).data('album');
+    //        mp3Obj["mp3"] = `/${src[3]}/${src[4]}`;
+    //        sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
+    //    }
+    //}
+
+    var list = JSON.parse(sessionStorage.getItem("wishlist"));
+    if (list && list["items"].length > 0) {
+        var link;
         player.on('ended', event => {
-            let link = $('.single-item__cover.play');
+            var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             current++;
-            if (current == len) {
+            if (current == list["items"].length) {
                 current = 0;
-                link = playlist.find('a[data-playlist]')[0];
-            } else {
-                link = playlist.find('a[data-playlist]')[current];
             }
-            run2($(link), audio[0]);
+            link = list["items"][current];
+            sessionStorage.setItem("currentTrack", current)
+            run3(link, audio[0]);
         });
 
         $('.plyr__control--prev').on('click', function (e) {
-            let link = $('.single-item__cover.play');
+            var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             current--;
             if (current == -1) {
-                current = len - 1;
-                link = playlist.find('a[data-playlist]')[current];
-            } else {
-                link = playlist.find('a[data-playlist]')[current];
+                current = list["items"].length - 1;
             }
-            run2($(link), audio[0]);
+            link = list["items"][current];
+            sessionStorage.setItem("currentTrack", current)
+            run3(link, audio[0]);
         });
 
         $('.plyr__control--next').on('click', function (e) {
-            let link = $('.single-item__cover.play');
+            var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             current++;
-            if (current == len) {
+            if (current == list["items"].length) {
                 current = 0;
-                link = playlist.find('a[data-playlist]')[0];
-            } else {
-                link = playlist.find('a[data-playlist]')[current];
             }
-            run2($(link), audio[0]);
+            link = list["items"][current];
+            sessionStorage.setItem("currentTrack", current)
+            run3(link, audio[0]);
         });
 
-        function run2(link, player) {
-            if ($(link).hasClass('play')) {
-                $(link).removeClass('play');
-                audio[0].pause();
-                $(link).addClass('pause');
-            }
-            else if ($(link).hasClass('pause')) {
-                $(link).removeClass('pause');
-                audio[0].play();
-                $(link).addClass('play');
-            }
-            else {
-                $('a[data-playlist]').removeClass('active');
-                $('a[data-playlist]').removeClass('pause');
-                $('a[data-playlist]').removeClass('play');
-                $(link).addClass('active');
-                $(link).addClass('play');
-                player.src = $(link).attr('href');
+        function run3(link, player) {
+            $('a[data-playlist]').removeClass('active');
+            $('a[data-playlist]').removeClass('pause');
+            $('a[data-playlist]').removeClass('play');
+            player.src = link["mp3"];
 
-                let title = $(link).data('title');
-                let artist = $(link).data('artist');
-                let img = $(link).data('img');
-                $('.player__title').text(title);
-                $('.player__artist').text(artist);
-                $('.player__cover img').attr('src', img);
-                audio[0].load();
-                audio[0].play();
-            }
+            let title = link["name"];
+            let artist = link["artist"];
+            let img = link["image"];
+            $('.player__title').text(title);
+            $('.player__artist').text(artist);
+            $('.player__cover img').attr('src', img);
+            console.log(link["albumId"])
+            $('#playlist__controll').attr('href', `/album/detail/${link["albumId"]}`);
+            audio[0].load();
+            $('#button__Control').click();
+            audio[0].play();
+            var mp3Obj = {};
+            mp3Obj["title"] = title;
+            mp3Obj["artist"] = artist;
+            mp3Obj["img"] = img;
+            mp3Obj["album"] = link["album"];
+            mp3Obj["mp3"] = link["mp3"];
+            sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
         }
+
+        //if (document.getElementById("audio").src.includes("/album/detail/")) {
+        //    var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
+        //    link = list["items"][current];
+        //    sessionStorage.setItem("currentTrack", current)
+        //    run3(link, audio[0]);
+        //    $('#button__Control').click();
+        //}
     }
 
     var song = document.getElementById('audio');
     var played = false;
-    var tillPlayed = parseInt(sessionStorage.getItem('timePlayed').toString(), 10) ? parseInt(sessionStorage.getItem('timePlayed').toString(), 10) : 0;
+    var tillPlayed = parseInt(sessionStorage.getItem('timePlayed'), 10) ? parseInt(sessionStorage.getItem('timePlayed'), 10) : 0;
     function update() {
         if (!played) {
             if (tillPlayed) {
@@ -570,8 +666,9 @@
             if (mp3Obj) {
                 $('.player__title').text(mp3Obj["title"]);
                 $('.player__artist').text(mp3Obj["artist"]);
+                $('#playlist__controll').attr('href', `/album/detail/${mp3Obj["album"]}`);
                 $('.player__cover img').attr('src', mp3Obj["img"]);
-                $('#audio').attr('src', mp3Obj["mp3"])
+                $('#audio').attr('src', mp3Obj["mp3"]);
                 $('#button__Control').click();
             }
             played = true;
@@ -579,7 +676,7 @@
         else {
             sessionStorage.setItem('timePlayed', song.currentTime);
         }
-        console.log(sessionStorage.getItem('timePlayed'))
     }
     setInterval(update, 1000);
+
 });

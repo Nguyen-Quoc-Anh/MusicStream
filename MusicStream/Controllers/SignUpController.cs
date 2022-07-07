@@ -39,7 +39,7 @@ namespace MusicStream.Controllers
             account.Email = Email;
             account.Password = Util.EncodePassword(Password);
             account.AccountId = accountID;
-            account.RoleId = 3;
+            account.RoleId = 2;
             account.Fullname = Name;
             account.Image = "~/img/avatar/avatar.jpg";
             string verifiCode = Util.RandomString(10);

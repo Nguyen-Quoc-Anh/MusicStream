@@ -76,7 +76,7 @@
                 <div class="main__title">
                     <h2>Mới phát hành</h2>
 
-                    <a href="track/list" class="main__link">
+                    <a href="/home/search" class="main__link">
                         Xem tất cả
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24">
@@ -86,7 +86,7 @@
                 </div>
             </div>
             <!-- end title -->
-            @foreach (var item in (Dictionary<Album, List<Account>>)ViewData["albums"])
+            @foreach (var item in (Dictionary<Album, List<Artist>>)ViewData["albums"])
             {
                 <div class="col-6 col-sm-4 col-lg-2">
                     <div class="album">
@@ -101,17 +101,15 @@
                         <div class="album__title">
                             <h3><a href="/album/detail/@item.Key.AlbumId">@item.Key.AlbumName</a></h3>
                             <span>
-                                @foreach (Account artist in item.Value)
+                                @foreach (Artist artist in item.Value)
                                 {
-                                    <a href="/artist/detail/@artist.AccountId">@artist.Fullname</a> @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
+                                    <a href="/artist/detail/@artist.ArtistId">@artist.Fullname</a> @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
                                 }
                             </span>
                         </div>
                     </div>
                 </div>
             }
-
-
         </section>
         <!-- end releases -->
         <!-- articts -->
@@ -135,9 +133,9 @@
             <div class="col-12">
                 <div class="main__carousel-wrap">
                     <div class="main__carousel main__carousel--artists owl-carousel" id="artists">
-                        @foreach (Account artist in (List<Account>)ViewData["artists"])
+                        @foreach (Artist artist in (List<Artist>)ViewData["artists"])
                         {
-                            <a href="/artist/detail/@artist.AccountId" class="artist">
+                            <a href="/artist/detail/@artist.ArtistId" class="artist">
                                 <div class="artist__cover">
                                     <img src="@artist.Image" alt="">
                                 </div>
@@ -178,11 +176,11 @@
 
                     <div class="col-12">
                         <ul class="main__list">
-                            @foreach (var item in (Dictionary<Track, List<Account>>)ViewData["popularTracks"])
+                            @foreach (var item in (Dictionary<Track, List<Artist>>)ViewData["popularTracks"])
                             {
                                 <li class="single-item">
-                                    <a data-link data-title="@item.Key.Name"
-                                   data-artist="@foreach (Account artist in item.Value)
+                                    <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                   data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
                                                 }"
@@ -198,11 +196,19 @@
                                         </svg>
                                     </a>
                                     <div class="single-item__title">
-                                        <h4><a href="/track/detail/@item.Key.TrackId">@item.Key.Name</a></h4>
+                                        <h4>
+                                            <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                           data-artist="@foreach (Artist artist in item.Value)
+                                                {
+                                                    @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
+                                                }"
+                                           data-img="@item.Key.Image"
+                                           href="@item.Key.Mp3">@item.Key.Name</a>
+                                        </h4>
                                         <span>
-                                            @foreach (Account artist in item.Value)
+                                            @foreach (Artist artist in item.Value)
                                             {
-                                                <a href="/artist/detail/@artist.AccountId">@artist.Fullname</a> @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
+                                                <a href="/artist/detail/@artist.ArtistId">@artist.Fullname</a> @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
                                             }
                                         </span>
                                     </div>
@@ -230,11 +236,11 @@
 
                     <div class="col-12">
                         <ul class="main__list">
-                            @foreach (var item in (Dictionary<Track, List<Account>>)ViewData["tracks"])
+                            @foreach (var item in (Dictionary<Track, List<Artist>>)ViewData["tracks"])
                             {
                                 <li class="single-item">
-                                    <a data-link data-title="@item.Key.Name"
-                                   data-artist="@foreach (Account artist in item.Value)
+                                    <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                   data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
                                                 }"
@@ -250,11 +256,19 @@
                                         </svg>
                                     </a>
                                     <div class="single-item__title">
-                                        <h4><a href="/track/detail/@item.Key.TrackId">@item.Key.Name</a></h4>
+                                        <h4>
+                                            <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                           data-artist="@foreach (Artist artist in item.Value)
+                                                {
+                                                    @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
+                                                }"
+                                           data-img="@item.Key.Image"
+                                           href="@item.Key.Mp3">@item.Key.Name</a>
+                                        </h4>
                                         <span>
-                                            @foreach (Account artist in item.Value)
+                                            @foreach (Artist artist in item.Value)
                                             {
-                                                <a href="/artist/detail/@artist.AccountId">@artist.Fullname</a> @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
+                                                <a href="/artist/detail/@artist.ArtistId">@artist.Fullname</a> @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
                                             }
                                         </span>
                                     </div>

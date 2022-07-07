@@ -10,6 +10,7 @@ using static MusicStream.Controllers.Logic.ArtistLogic;
 using static MusicStream.Controllers.Logic.AlbumLogic;
 using static MusicStream.Controllers.Logic.GenreLogic;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 
 namespace MusicStreamingver1.Controllers
 {
@@ -24,10 +25,10 @@ namespace MusicStreamingver1.Controllers
 
         public IActionResult Index()
         {
-            Dictionary<Track, List<Account>> tracks = GetFeatureTrack();
-            Dictionary<Track, List<Account>> popularTracks = GetMostPopularTrack();
-            Dictionary<Album, List<Account>> albums = GetFeatureAlbum();
-            List<Account> artists = GetFeatureArtists();
+            Dictionary<Track, List<Artist>> tracks = GetFeatureTrack();
+            Dictionary<Track, List<Artist>> popularTracks = GetMostPopularTrack();
+            Dictionary<Album, List<Artist>> albums = GetFeatureAlbum();
+            List<Artist> artists = GetFeatureArtists();
             ViewData["tracks"] = tracks;
             ViewData["popularTracks"] = popularTracks;
             ViewData["artists"] = artists;
@@ -35,12 +36,21 @@ namespace MusicStreamingver1.Controllers
             return View("Index");
         }
 
-        public IActionResult Search(string key, string sortby, string[] genres, string[] artists)
+        public IActionResult Search(string key, string sortby, string[] genres, string[] artists, int page)
         {
-            List<Account> artist = GetAllArtist();
-            ViewData["artists"] = artist;
+            string sort = string.IsNullOrEmpty(sortby) ? "newest" : sortby;
+            page = page < 1 ? 1 : page;
+            key = string.IsNullOrEmpty(key) ? "" : key;
+            var trackList = GetListTrackByFilter(artists, genres, key, sort);
+            page = (page > (trackList.Count / 12)) ? trackList.Count / 12 : page;
+            ViewData["artists"] = GetAllArtistAsMultiSelectList();
             ViewData["genres"] = GetAllGenresAsMultiSelectList();
-            return View();
+            ViewData["sort"] = sort;
+            ViewData["page"] = page;
+            ViewData["key"] = key;
+            ViewData["artistsId"] = artists;
+            ViewData["genresId"] = genres;
+            return View(trackList.ToPagedList<Track>(pageNumber: page, pageSize: 12));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

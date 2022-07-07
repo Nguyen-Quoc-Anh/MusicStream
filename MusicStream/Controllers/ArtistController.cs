@@ -9,10 +9,10 @@ namespace MusicStream.Controllers
     {
         public IActionResult Detail(string id)
         {
-            Account artist = GetArtistByID(id);
+            Artist artist = GetArtistByID(id);
             if (artist == null)
                 return NotFound();
-            List<Account> artists = GetFeatureArtists();
+            List<Artist> artists = GetFeatureArtists();
             List<Album> albums = GetAlbumByArtistId(id);
             ViewData["albums"] = albums;
             ViewData["artists"] = artists;

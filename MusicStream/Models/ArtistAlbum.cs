@@ -7,10 +7,10 @@ namespace MusicStream.Models
 {
     public partial class ArtistAlbum
     {
-        public string AccountId { get; set; }
+        public string ArtistId { get; set; }
         public string AlbumId { get; set; }
 
-        public virtual Account Account { get; set; }
         public virtual Album Album { get; set; }
+        public virtual Artist Artist { get; set; }
     }
 }
