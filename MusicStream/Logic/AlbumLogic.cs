@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MusicStream.Extensions;
 using MusicStream.Models;
 using System.Collections.Generic;
 using System.Linq;

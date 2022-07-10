@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using MusicStream.Extensions;
 using MusicStream.Models;
 using System;
 using System.Collections.Generic;
@@ -40,15 +41,22 @@ namespace MusicStream.Controllers.Logic
             var multiSelectList = new MultiSelectList(artists, "ArtistId", "Fullname");
             return multiSelectList;
         }
-    }
 
-    public static class Extensions
-    {
-        static Random rnd = new Random();
-
-        public static IEnumerable<T> PickRandom<T>(this IList<T> source, int count)
+        public static List<Artist> GetArtistsByName(string name, string sort)
         {
-            return source.OrderBy(x => rnd.Next()).Take(count);
+            using (var context = new MusicStreamingContext())
+            {
+                List<Artist> artists = context.Artists.Where(p => p.Fullname.ToLower().Contains(name.ToLower())).ToList();
+                if (sort.Equals("asc"))
+                {
+                    artists = artists.OrderBy(a => a.Fullname).ToList();
+                }
+                else
+                {
+                    artists = artists.OrderByDescending(a => a.Fullname).ToList();
+                }
+                return artists;
+            }
         }
     }
 }

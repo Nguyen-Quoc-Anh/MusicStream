@@ -70,6 +70,18 @@ namespace MusicStream.Controllers.Logic
             }
         }
 
+        public static List<Track> GetTrackListByPlayList(string playListId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                List<string> tracks = context.Tracks.Include(t => t.PlayListTracks)
+                    .Where(p => p.PlayListTracks.Any(p => p.PlaylistId == playListId)).Select(t => t.TrackId).ToList();
+                return context.Tracks.Include(t => t.Album)
+                    .Include(t => t.ArtistTracks).ThenInclude(t => t.Artist)
+                    .Where(t => tracks.Contains(t.TrackId)).ToList();
+            }
+        }
+
         public static Dictionary<Track, List<Artist>> GetMostPopularTrack()
         {
             Dictionary<Track, List<Artist>> tracks = new Dictionary<Track, List<Artist>>();

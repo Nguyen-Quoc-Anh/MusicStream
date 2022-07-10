@@ -79,5 +79,13 @@ namespace MusicStream.Controllers
             page = page < 1 ? 1 : page;
             return View("FavouriteSong", tracksList.ToPagedList<Track>(pageNumber: page, pageSize: 12));
         }
+
+        [Route("logout")]
+        public IActionResult LogOut()
+        {
+            Response.Cookies.Delete("account");
+            HttpContext.Session.Remove("account");
+            return LocalRedirect("/");
+        }
     }
 }

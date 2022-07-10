@@ -6706,6 +6706,33 @@ body::-webkit-scrollbar-thumb {
     overflow: hidden;
 }
 
+.modal-lg {
+    position: relative;
+    display: block;
+    background-color: #16151a;
+    margin: 40px auto;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.modal-playlist {
+    height: 680px;
+    max-height: 680px;
+    overflow-y: scroll;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.modal-playlist {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+    .modal-playlist::-webkit-scrollbar {
+        display: none !important;
+    }
+
 .modal__icon {
     display: none;
     flex-direction: row;
@@ -7285,3 +7312,17 @@ body::-webkit-scrollbar-thumb {
         background-color: #25a56a;
         color: #fff;
     }
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #25a56a;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: #fff;
+    border-radius: 10px;
+    background-color: #25a56a;
+}

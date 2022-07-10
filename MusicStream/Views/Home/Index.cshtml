@@ -1,4 +1,5 @@
-﻿@*
+﻿@using MusicStream.Logic
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -10,50 +11,22 @@
         <section class="row">
             <div class="col-12">
                 <div class="hero owl-carousel" id="hero">
-                    <div class="hero__slide" data-bg="img/home/slide1.jpg">
-                        <h1 class="hero__title">Record Label & Music streaming</h1>
-                        <p class="hero__text">
-                            There are many variations of passages of Lorem Ipsum available, but
-                            the majority have suffered alteration in some form, by injected humour, or randomised
-                            words which don't look even slightly believable
-                        </p>
-                        <div class="hero__btns">
-                            <a href="#" class="hero__btn hero__btn--green">Buy now</a>
-                            <a href="#" class="hero__btn">Learn more</a>
+                    @foreach (var playlist in ViewBag.Playlists as List<Playlist>)
+                    {
+                        <div class="hero__slide" data-bg="@playlist.Image">
+                            <h2 class="hero__title"> @playlist.Name</h2>
+                            <p class="hero__text">
+                                Tạo bởi @(ViewBag.AccountId == playlist.AccountId ? "bạn" : $"{playlist.Account.Fullname}") @Util.CalculateTimeAgo(Convert.ToDateTime(playlist.CreatedTime))
+                            </p>
+                            <div class="hero__btns">
+                                <a href="/playlist/detail/@playlist.PlaylistId" class="hero__btn hero__btn--green">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M16,10.27,11,7.38A2,2,0,0,0,8,9.11v5.78a2,2,0,0,0,1,1.73,2,2,0,0,0,2,0l5-2.89a2,2,0,0,0,0-3.46ZM15,12l-5,2.89V9.11L15,12ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" />
+                                    </svg> Khám phá ngay
+                                </a>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="hero__slide" data-bg="img/home/slide2.jpg">
-                        <h2 class="hero__title">
-                            Metallica and Slipknot feature in trailer for ‘Long Live Rock’
-                            documentary
-                        </h2>
-                        <p class="hero__text">
-                            It also features Rage Against The Machine, Guns N' Roses and a number
-                            of others
-                        </p>
-                        <div class="hero__btns">
-                            <a href="#" class="hero__btn hero__btn--green">Learn more</a>
-                            <a href="http://www.youtube.com/watch?v=0O2aH4XLbto"
-                               class="hero__btn hero__btn--video open-video">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path d="M16,10.27,11,7.38A2,2,0,0,0,8,9.11v5.78a2,2,0,0,0,1,1.73,2,2,0,0,0,2,0l5-2.89a2,2,0,0,0,0-3.46ZM15,12l-5,2.89V9.11L15,12ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" />
-                                </svg> Watch video
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="hero__slide" data-bg="img/home/slide3.jpg">
-                        <h2 class="hero__title">New Artist of Our Label</h2>
-                        <p class="hero__text">
-                            There are many variations of passages of Lorem Ipsum available, but
-                            the majority have suffered alteration in some form, by injected humour, or randomised
-                            words which don't look even slightly believable
-                        </p>
-                        <div class="hero__btns">
-                            <a href="#" class="hero__btn">Learn more</a>
-                        </div>
-                    </div>
+                    }
                 </div>
 
                 <button class="main__nav main__nav--hero main__nav--prev" data-nav="#hero" type="button">
@@ -119,7 +92,7 @@
                 <div class="main__title">
                     <h2>Nghệ sĩ</h2>
 
-                    <a href="/artist/list" class="main__link">
+                    <a href="/artist/search" class="main__link">
                         Xem tất cả
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24">
@@ -179,7 +152,7 @@
                             @foreach (var item in (Dictionary<Track, List<Artist>>)ViewData["popularTracks"])
                             {
                                 <li class="single-item">
-                                    <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                    <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                    data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
@@ -197,7 +170,7 @@
                                     </a>
                                     <div class="single-item__title">
                                         <h4>
-                                            <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                            <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                            data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
@@ -239,7 +212,7 @@
                             @foreach (var item in (Dictionary<Track, List<Artist>>)ViewData["tracks"])
                             {
                                 <li class="single-item">
-                                    <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                    <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                    data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
@@ -257,7 +230,7 @@
                                     </a>
                                     <div class="single-item__title">
                                         <h4>
-                                            <a data-link data-title="@item.Key.Name" data-album="@item.Key.AlbumId"
+                                            <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                            data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")

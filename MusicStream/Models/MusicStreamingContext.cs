@@ -28,6 +28,7 @@ namespace MusicStream.Models
         public virtual DbSet<Genre> Genres { get; set; }
         public virtual DbSet<GenreOfTrack> GenreOfTracks { get; set; }
         public virtual DbSet<LikeTrack> LikeTracks { get; set; }
+        public virtual DbSet<PlayListFollow> PlayListFollows { get; set; }
         public virtual DbSet<PlayListTrack> PlayListTracks { get; set; }
         public virtual DbSet<Playlist> Playlists { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
@@ -344,10 +345,39 @@ namespace MusicStream.Models
                     .HasConstraintName("FK__LikeTrack__track__4BAC3F29");
             });
 
+            modelBuilder.Entity<PlayListFollow>(entity =>
+            {
+                entity.HasKey(e => new { e.AccountId, e.PlaylistId })
+                    .HasName("PK__PlayList__8F35842E96BC7B0C");
+
+                entity.ToTable("PlayListFollow");
+
+                entity.Property(e => e.AccountId)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("accountID");
+
+                entity.Property(e => e.PlaylistId)
+                    .HasMaxLength(50)
+                    .HasColumnName("playlistID");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.PlayListFollows)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__PlayListF__accou__05D8E0BE");
+
+                entity.HasOne(d => d.Playlist)
+                    .WithMany(p => p.PlayListFollows)
+                    .HasForeignKey(d => d.PlaylistId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__PlayListF__playl__06CD04F7");
+            });
+
             modelBuilder.Entity<PlayListTrack>(entity =>
             {
                 entity.HasKey(e => new { e.PlaylistId, e.TrackId })
-                    .HasName("PK__PlayList__E0714E9D0FBA73F5");
+                    .HasName("PK__PlayList__E0714E9D4DA1BDBB");
 
                 entity.ToTable("PlayListTrack");
 
@@ -364,13 +394,13 @@ namespace MusicStream.Models
                     .WithMany(p => p.PlayListTracks)
                     .HasForeignKey(d => d.PlaylistId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PlayListT__playl__47DBAE45");
+                    .HasConstraintName("FK__PlayListT__playl__09A971A2");
 
                 entity.HasOne(d => d.Track)
                     .WithMany(p => p.PlayListTracks)
                     .HasForeignKey(d => d.TrackId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PlayListT__track__48CFD27E");
+                    .HasConstraintName("FK__PlayListT__track__0A9D95DB");
             });
 
             modelBuilder.Entity<Playlist>(entity =>
@@ -386,6 +416,11 @@ namespace MusicStream.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("accountID");
+
+                entity.Property(e => e.CreatedTime)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createdTime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Image)
                     .IsRequired()
@@ -404,7 +439,7 @@ namespace MusicStream.Models
                     .WithMany(p => p.Playlists)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Playlist__accoun__440B1D61");
+                    .HasConstraintName("FK__Playlist__accoun__01142BA1");
             });
 
             modelBuilder.Entity<Role>(entity =>

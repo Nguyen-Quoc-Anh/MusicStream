@@ -9,6 +9,7 @@ namespace MusicStream.Models
     {
         public Playlist()
         {
+            PlayListFollows = new HashSet<PlayListFollow>();
             PlayListTracks = new HashSet<PlayListTrack>();
         }
 
@@ -17,8 +18,10 @@ namespace MusicStream.Models
         public string Image { get; set; }
         public string AccountId { get; set; }
         public bool? IsPrivate { get; set; }
+        public DateTime? CreatedTime { get; set; }
 
         public virtual Account Account { get; set; }
+        public virtual ICollection<PlayListFollow> PlayListFollows { get; set; }
         public virtual ICollection<PlayListTrack> PlayListTracks { get; set; }
     }
 }

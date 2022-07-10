@@ -1,0 +1,70 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model X.PagedList.IPagedList<MusicStream.Models.Artist>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core
+<!-- main content -->
+<main class="main">
+    <div class="container-fluid">
+        <div class="row row--grid">
+            <!-- breadcrumb -->
+            <div class="col-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Tìm kiếm</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb -->
+            <!-- title -->
+            <div class="col-12">
+                <div class="main__title main__title--page">
+                    <h1>Tìm kiếm</h1>
+                </div>
+            </div>
+            <!-- end title -->
+        </div>
+
+        <!-- releases -->
+        <div class="row row--grid">
+            <div class="col-12">
+                <form action="/artist/search" method="get">
+                    <div class="main__filter">
+                        <div class="main__filter-search">
+                            <input type="text" name="name" placeholder="Tìm kiếm..." value="@ViewData["name"]">
+                        </div>
+                        <div class="main__filter-wrap">
+                        </div>
+                        <div class="slider-radio">
+                            <input type="radio" name="sort" value="asc" id="newest" @(ViewBag.Sort.Equals("asc") ? "checked" : "")><label for="newest">A-Z</label>
+                            <input type="radio" name="sort" value="desc" id="popular" @(ViewBag.Sort.Equals("desc") ? "checked" : "")><label for="popular">Z-A</label>
+                        </div>
+                        <button type="submit" class="hero__btn hero__btn--green" style="margin: auto; margin-left: 20px; padding: 10px 10px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z" /></svg></button>
+                    </div>
+                </form>
+                <div class="row row--grid">
+                    @foreach (var artist in Model)
+                    {
+                        <div class="col-6 col-sm-4 col-lg-2">
+                            <div class="album">
+                                <div class="album__cover">
+                                    <img src="@artist.Image" alt="">
+                                    <a href="/artist/detail/@artist.ArtistId"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.54,9,8.88,3.46a3.42,3.42,0,0,0-5.13,3V17.58A3.42,3.42,0,0,0,7.17,21a3.43,3.43,0,0,0,1.71-.46L18.54,15a3.42,3.42,0,0,0,0-5.92Zm-1,4.19L7.88,18.81a1.44,1.44,0,0,1-1.42,0,1.42,1.42,0,0,1-.71-1.23V6.42a1.42,1.42,0,0,1,.71-1.23A1.51,1.51,0,0,1,7.17,5a1.54,1.54,0,0,1,.71.19l9.66,5.58a1.42,1.42,0,0,1,0,2.46Z" /></svg></a>
+                                </div>
+                                <div class="album__title">
+                                    <h3><a href="/artist/detail/@artist.ArtistId">@artist.Fullname</a></h3>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @Html.PagedListPager(Model, page => Url.Action("search", new { page, name = $"{ViewData["name"].ToString()}", sort = $"{ViewData["sort"].ToString()}"}))
+            </div>
+        </div>
+        <!-- end releases -->
+    </div>
+</main>
+<!-- end main content -->

@@ -460,8 +460,8 @@
             let title = $(link).data('title');
             let artist = $(link).data('artist');
             let img = $(link).data('img');
-            let album = $(link).data('album');
-            $('#playlist__controll').attr('href', `/album/detail/${album}`);
+            let linkTo = $(link).data('link');
+            $('#playlist__controll').attr('href', linkTo);
             $('.player__title').text(title);
             $('.player__artist').text(artist);
             $('.player__cover img').attr('src', img);
@@ -470,8 +470,8 @@
             var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             let trackObj = {};
             trackObj["name"] = title;
-            trackObj["image"] = image;
-            trackObj["albumId"] = album;
+            trackObj["image"] = img;
+            trackObj["link"] = linkTo;
             trackObj["artist"] = artist;
             trackObj["mp3"] = $(link).attr('href');
             var wishlist = JSON.parse(sessionStorage.getItem("wishlist"));
@@ -489,7 +489,7 @@
         mp3Obj["title"] = $(link).data('title');
         mp3Obj["artist"] = $(link).data('artist');
         mp3Obj["img"] = $(link).data('img');
-        mp3Obj["album"] = $(link).data('album');
+        mp3Obj["link"] = $(link).data('link');
         mp3Obj["mp3"] = `/${src[3]}/${src[4]}`;
         sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
     }
@@ -631,8 +631,7 @@
             $('.player__title').text(title);
             $('.player__artist').text(artist);
             $('.player__cover img').attr('src', img);
-            console.log(link["albumId"])
-            $('#playlist__controll').attr('href', `/album/detail/${link["albumId"]}`);
+            $('#playlist__controll').attr('href', link["link"]);
             audio[0].load();
             $('#button__Control').click();
             audio[0].play();
@@ -640,7 +639,7 @@
             mp3Obj["title"] = title;
             mp3Obj["artist"] = artist;
             mp3Obj["img"] = img;
-            mp3Obj["album"] = link["album"];
+            mp3Obj["link"] = link["link"];
             mp3Obj["mp3"] = link["mp3"];
             sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
         }
@@ -666,7 +665,7 @@
             if (mp3Obj) {
                 $('.player__title').text(mp3Obj["title"]);
                 $('.player__artist').text(mp3Obj["artist"]);
-                $('#playlist__controll').attr('href', `/album/detail/${mp3Obj["album"]}`);
+                $('#playlist__controll').attr('href', mp3Obj["link"]);
                 $('.player__cover img').attr('src', mp3Obj["img"]);
                 $('#audio').attr('src', mp3Obj["mp3"]);
                 $('#button__Control').click();

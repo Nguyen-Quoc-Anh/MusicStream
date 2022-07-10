@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MusicStream.Controllers.Logic;
+using MusicStream.Logic;
 using MusicStream.Models;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -16,6 +18,11 @@ namespace MusicStream.Controllers
                 return NotFound();
             }
             Dictionary<Album, List<Artist>> recommendAlbum = GetRandomAlbum(6);
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account != null)
+            {
+                ViewData["playLists"] = PlayListLogic.GetAllPlayListByAccountId(account.AccountId);
+            }
             ViewData["album"] = album;
             ViewData["recommendAlbum"] = recommendAlbum;
             return View(album);

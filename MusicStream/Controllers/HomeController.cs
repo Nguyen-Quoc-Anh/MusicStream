@@ -11,6 +11,7 @@ using static MusicStream.Controllers.Logic.AlbumLogic;
 using static MusicStream.Controllers.Logic.GenreLogic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList;
+using MusicStream.Logic;
 
 namespace MusicStreamingver1.Controllers
 {
@@ -25,14 +26,21 @@ namespace MusicStreamingver1.Controllers
 
         public IActionResult Index()
         {
+            Account account = Util.CheckLogged(HttpContext, Request);
             Dictionary<Track, List<Artist>> tracks = GetFeatureTrack();
             Dictionary<Track, List<Artist>> popularTracks = GetMostPopularTrack();
             Dictionary<Album, List<Artist>> albums = GetFeatureAlbum();
             List<Artist> artists = GetFeatureArtists();
+            List<Playlist> playlists = PlayListLogic.GetRandomPlayList();
             ViewData["tracks"] = tracks;
             ViewData["popularTracks"] = popularTracks;
             ViewData["artists"] = artists;
             ViewData["albums"] = albums;
+            ViewBag.Playlists = playlists;
+            if (account != null)
+            {
+                ViewBag.AccountId = account.AccountId;
+            }
             return View("Index");
         }
 

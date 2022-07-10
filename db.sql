@@ -73,7 +73,8 @@ create table Playlist(
 	name nvarchar(100) not null,
 	image nvarchar(max) not null,
 	accountID varchar(50) references Account(accountID) not null,
-	isPrivate bit default 0
+	isPrivate bit default 0,
+	createdTime datetime default getDate()
 )
 
 create table PlayListTrack (
@@ -95,4 +96,12 @@ create table Comment(
 	trackID varchar(50) references Track(trackID) not null,
 	parentID varchar(50) references Comment(commentID)
 )
+
+create table PlayListFollow (
+	accountID varchar(50) references Account(accountID) not null,
+	playlistID nvarchar(50) references Playlist(playlistID) not null,
+	Primary key (accountID, playlistID)
+)
+
 insert into Role (name) values (N'Admin'), (N'User')
+

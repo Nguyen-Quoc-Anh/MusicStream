@@ -60,7 +60,7 @@
                             @foreach (var item in Model.Tracks)
                             {
                                 <li class="single-item">
-                                    <a data-link data-playlist data-title="@item.Name" data-album="@item.AlbumId"
+                                    <a data-link data-playlist data-title="@item.Name" data-link="/album/detail/@item.AlbumId"
                                    data-artist="@foreach (var artist in item.ArtistTracks)
                                                 {
                                                     @artist.Artist.Fullname @((item.ArtistTracks.ToList().IndexOf(artist) != item.ArtistTracks.Count - 1) ? "&" : "")
@@ -75,7 +75,7 @@
                                     </a>
                                     <div class="single-item__title">
                                         <h4>
-                                            <a data-link data-title="@item.Name" data-album="@item.AlbumId" data-artist="@foreach (var artist in item.ArtistTracks)
+                                            <a data-link data-title="@item.Name" data-link="/album/detail/@item.AlbumId" data-artist="@foreach (var artist in item.ArtistTracks)
                                                 {
                                                     @artist.Artist.Fullname @((item.ArtistTracks.ToList().IndexOf(artist) != item.ArtistTracks.Count - 1) ? "&" : "")
                                                 }" data-img="@item.Image" href="@item.Mp3">@item.Name</a>
@@ -89,19 +89,39 @@
                                             }
                                         </span>
                                     </div>
-                                    <button href="@(Accessor.HttpContext.Session.GetString("account") == null ? "#modal-buy" : "")" class="single-item__add @(Accessor.HttpContext.Session.GetString("account") == null ? "open-modal" : "")" id="addtofavourite"
-                                        style="background-color: rgba(255, 112, 77,0.15); " @(Accessor.HttpContext.Session.GetString("account") == null ? "" : $"onclick=addToFavourite('{item.TrackId}')")>
-                                        <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
+                                    @if (Accessor.HttpContext.Session.GetString("account") == null)
+                                    {
+                                        <button href="#modal-buy" class="single-item__add open-modal" id="addtofavourite"
+                                        style="background-color: rgba(255, 112, 77,0.15);">
+                                            <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
                                          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
                                          clip-rule="evenodd">
-                                            <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.191 0 4.661 5.571 9.429 12 15.809 6.43-6.38 12-11.148 12-15.809 0-4.011-3.095-6.181-6.274-6.181" />
-                                        </svg>
-                                    </button>
-                                    <a href="#" class="single-item__add">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M19,11H13V5a1,1,0,0,0-2,0v6H5a1,1,0,0,0,0,2h6v6a1,1,0,0,0,2,0V13h6a1,1,0,0,0,0-2Z" />
-                                        </svg>
-                                    </a>
+                                                <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.191 0 4.661 5.571 9.429 12 15.809 6.43-6.38 12-11.148 12-15.809 0-4.011-3.095-6.181-6.274-6.181" />
+                                            </svg>
+                                        </button>
+                                        <button href="#modal-buy" class="single-item__add open-modal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                <path d="M19,11H13V5a1,1,0,0,0-2,0v6H5a1,1,0,0,0,0,2h6v6a1,1,0,0,0,2,0V13h6a1,1,0,0,0,0-2Z" />
+                                            </svg>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button href="" class="single-item__add" id="addtofavourite"
+                                        style="background-color: rgba(255, 112, 77,0.15); " onclick="addToFavourite('@item.TrackId')">
+                                            <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
+                                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
+                                         clip-rule="evenodd">
+                                                <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.191 0 4.661 5.571 9.429 12 15.809 6.43-6.38 12-11.148 12-15.809 0-4.011-3.095-6.181-6.274-6.181" />
+                                            </svg>
+                                        </button>
+                                        <button href="" class="single-item__add" onclick="openPlaylist('@item.TrackId')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                <path d="M19,11H13V5a1,1,0,0,0-2,0v6H5a1,1,0,0,0,0,2h6v6a1,1,0,0,0,2,0V13h6a1,1,0,0,0,0-2Z" />
+                                            </svg>
+                                        </button>
+                                    }
+
                                     <a href="javascript:downloadResource('@item.Mp3', '@($"{item.Name}.mp3")')"
                                    class="single-item__export">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -114,7 +134,7 @@
                                          version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 24 24"
                                          style="enable-background:new 0 0 230 230;" xml:space="preserve">
                                         <path d="M213.588,120.982L115,213.445l-98.588-92.463C-6.537,96.466-5.26,57.99,19.248,35.047l2.227-2.083  c24.51-22.942,62.984-21.674,85.934,2.842L115,43.709l7.592-7.903c22.949-24.516,61.424-25.784,85.936-2.842l2.227,2.083  C235.26,57.99,236.537,96.466,213.588,120.982z" />
-                                                </svg>
+                                                                                                </svg>
                                     </a>
                                     <span class="single-item__time">@TimeSpan.FromSeconds(Convert.ToDouble(item.Duration)).ToString(@"mm\:ss")</span>
                                 </li>
@@ -123,6 +143,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Artist-->
             <div class="container-fluid">
                 <section class="row row--grid">
                     <!-- title -->
@@ -148,6 +170,7 @@
                 </section>
             </div>
             <!-- end articts -->
+            <!-- Comment -->
             <div class="col-12 col-lg-8 mt-3">
                 <div class="article">
                     <!-- comments -->
@@ -302,6 +325,7 @@
                 </div>
             </div>
 
+            <!-- Random album -->
             <div class="col-12 col-lg-4 mt-5">
                 <!-- releases -->
                 <div class="row row--sidebar">
@@ -344,18 +368,7 @@
     </div>
 </main>
 <!-- end main content -->
-<!-- modal info -->
-<div id="modal-buy" class="zoom-anim-dialog mfp-hide modal modal--info">
-    <button class="modal__close" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
-        </svg>
-    </button>
 
-    <h2 class="sign__title mt-3" style="text-align: center;">Bạn cần đăng nhập để sử dụng chức năng này.</h2>
-    <a href="/signin" class="release__buy" id="addtowishlist">Đăng nhập</a>
-</div>
-<!-- end modal info -->
 <!-- modal info -->
 <div id="modal-info2" class="zoom-anim-dialog mfp-hide modal modal--info">
     <span class="modal__icon modal__icon--green">
@@ -379,24 +392,49 @@
 </div>
 <!-- end modal info -->
 <!-- modal info -->
-<div id="modal-info4" class="zoom-anim-dialog mfp-hide modal modal--info">
-    <span class="modal__icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,2A10,10,0,1,0,22,12,10.01114,10.01114,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8.00917,8.00917,0,0,1,12,20Zm0-8.5a1,1,0,0,0-1,1v3a1,1,0,0,0,2,0v-3A1,1,0,0,0,12,11.5Zm0-4a1.25,1.25,0,1,0,1.25,1.25A1.25,1.25,0,0,0,12,7.5Z"></path></svg>
-    </span>
-
-    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
-
-    <h4 class="sign__title">Example of notification.</h4>
-
-    <div class="sign__group sign__group--row">
-        <label class="sign__label">Amount to auto-renew:</label>
-        <span class="sign__value">$18.00</span>
+@if (Accessor.HttpContext.Session.GetString("account") != null)
+{
+    <div id="modal-info4" class="zoom-anim-dialog mfp-hide modal-lg modal--info">
+        <h2 class="id-target" style="color: white">
+            Playlist
+        </h2>
+        <div class="modal-playlist">
+            <div class="row">
+                @if (ViewData["playLists"] != null)
+                {
+                    @if (((List<Playlist>)ViewData["playLists"]).Count == 0)
+                    {
+                        <h3 style="color: white; margin-top: 20px; text-align: center">
+                        </h3>
+                    }
+                    else
+                    {
+                        @foreach (var playList in ViewData["playLists"] as List<Playlist>)
+                        {
+                            <div class="col-4 col-sm-6 col-lg-4">
+                                <div class="album album--sidebar">
+                                    <div class="album__cover">
+                                        <img src="@playList.Image" alt="">
+                                        <a href="#" onclick="addToPlayList('@playList.PlaylistId')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" /></svg>
+                                        </a>
+                                    </div>
+                                    <div class="album__title">
+                                        <h3><a href="">@playList.Name</a></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div>
+            <h3 id="pl-success" style="color: white; display: none; padding-left: 20px; padding-bottom: 15px;">Thêm vào playlist thành công</h3>
+            <h3 id="pl-failed" style="color: white; display: none; padding-left: 20px; padding-bottom: 15px;">Thêm vào playlist thất bại</h3>
+        </div>
     </div>
-
-    <div class="sign__group sign__group--row">
-        <span class="sign__text sign__text--small">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</span>
-    </div>
-</div>
+}
 <!-- end modal info -->
 <!-- modal info -->
 <div id="modal-info5" class="zoom-anim-dialog mfp-hide modal modal--info">
@@ -415,9 +453,14 @@
     </div>
 </div>
 <!-- end modal info -->
+<!-- The Modal -->
+
+
+
 <div style="display: none">
     <a href="#modal-info2" id="info2" class="open-modal">Modal success</a>
     <a href="#modal-info3" id="if3" class="open-modal">Modal failed</a>
+    <a href="#modal-info4" id="if4" class="open-modal">Modal playlist</a>
 </div>
 @section Scripts {
 <script>
@@ -454,7 +497,7 @@
                 let trackObj = {};
                 trackObj["name"] = d["Name"];
                 trackObj["image"] = d["Image"];
-                trackObj["albumId"] = d["Album"]["AlbumId"];
+                trackObj["link"] = `/album/detail/${d["Album"]["AlbumId"]}`;
                 var artists = [];
                 for (let i = 0; i < d["ArtistTracks"].length; i++) {
                     artists.push(`${d["ArtistTracks"][i]["Artist"]["Fullname"]}`)
@@ -471,7 +514,18 @@
                     items: collectData
                 }
             }
+            let audio = $('#audio');
+            if (!audio.src) {
+                $('#playlist__controll').attr('href', wishlist["items"][0]["link"]);
+                $('.player__title').text(wishlist["items"][0]["name"]);
+                $('.player__artist').text(wishlist["items"][0]["artist"]);
+                $('.player__cover img').attr('src', wishlist["items"][0]["image"]);
+                $('#audio').attr('src', wishlist["items"][0]["mp3"]);
+                $('#button__Control').click();
+                sessionStorage.setItem("currentTrack", 1)
+            }
             sessionStorage.setItem("wishlist", JSON.stringify(wishlist));
+            $.getScript("/js/main.js");
             console.log(JSON.parse(sessionStorage.getItem("wishlist")))
         });
     });
@@ -488,5 +542,31 @@
             }
         });
     }
+
+    function openPlaylist(trackId) {
+        sessionStorage.setItem("trackId", trackId);
+        $("#if4").click();
+    }
+
+    function addToPlayList(playListId) {
+        var trackId = sessionStorage.getItem("trackId");
+        if (trackId) {
+            $.post(`/playlist/addtoplaylist`, {playlistId: playListId, trackId: trackId}, function(response){
+                response = JSON.parse(response);
+                if (response["Success"]) {
+                    $("#pl-success").show();
+                    setTimeout(() => {
+                        $("#pl-success").hide();
+                    }, 3000)
+                } else {
+                    $("#pl-failed").show();
+                    setTimeout(() => {
+                        $("#pl-failed").hide();
+                    }, 3000)
+                }
+            });
+        }
+    }
+
 </script>
 }
