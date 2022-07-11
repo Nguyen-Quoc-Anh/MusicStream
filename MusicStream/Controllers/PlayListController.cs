@@ -33,7 +33,10 @@ namespace MusicStream.Controllers
                 page = 1;
             }
             List<Playlist> playlist = PlayListLogic.GetAllPlayListAndFollowPlayListByAccountId(account.AccountId);
-            ViewData["accountId"] = account.AccountId;
+            if (account != null)
+            {
+                ViewData["accountId"] = account.AccountId;
+            }
             return View("List", playlist.ToPagedList<Playlist>(pageNumber: page, pageSize: 12));
         }
 
@@ -60,7 +63,13 @@ namespace MusicStream.Controllers
                     ViewBag.AccountId = account.AccountId;
                 }
                 ViewData["playLists"] = PlayListLogic.GetAllPlayListByAccountId(account.AccountId);
+                if (PlayListLogic.IsAccountFollowPlaylist(account.AccountId, id))
+                {
+                    ViewBag.IsAccountFollow = true;
+                }
             }
+
+            ViewBag.ReturnUrl = $"/playlist/detail/{id}";
             return View("Detail", playlist);
         }
 
@@ -202,6 +211,91 @@ namespace MusicStream.Controllers
             }
             List<Playlist> playlists = PlayListLogic.GetPlaylistsBySearch(name, sort);
             return View("Search", playlists.ToPagedList<Playlist>(pageNumber: page, pageSize: 12));
+        }
+
+        [HttpPost]
+        public string FollowPlaylist(string Id)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return JsonConvert.SerializeObject(new Models.Action("follow", false));
+            }
+            if (PlayListLogic.IsAccountFollowPlaylist(account.AccountId, Id))
+            {
+                return JsonConvert.SerializeObject(new Models.Action("follow", false));
+            }
+            else
+            {
+                bool success = PlayListLogic.FollowPlaylist(account.AccountId, Id);
+                return JsonConvert.SerializeObject(new Models.Action("follow", success));
+            }
+        }
+
+        [HttpPost]
+        public string UnFollowPlaylist(string Id)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return JsonConvert.SerializeObject(new Models.Action("follow", false));
+            }
+            if (PlayListLogic.IsAccountFollowPlaylist(account.AccountId, Id))
+            {
+                bool success = PlayListLogic.UnFollowPlaylist(account.AccountId, Id);
+                return JsonConvert.SerializeObject(new Models.Action("follow", success));
+            }
+            else
+            {
+                return JsonConvert.SerializeObject(new Models.Action("follow", false));
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditPlaylist(IFormFile file, string name, string isPrivate, string playlistId)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            if (PlayListLogic.CheckPlayListIdIsExist(playlistId))
+            {
+                Playlist playlist = PlayListLogic.GetPlaylistById(playlistId);
+                if (!string.IsNullOrEmpty(name))
+                {
+                    playlist.Name = name;
+                }
+                playlist.IsPrivate = isPrivate != null;
+                if (file != null)
+                {
+                    bool deleteSuccess = Util.DeleteFile(webHostEnvironment, playlist.Image.Split("/")[3]);
+                    if (deleteSuccess)
+                    {
+                        await Util.UploadedFile(file, webHostEnvironment, playlist.Image.Split("/")[3]);
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("edit", "failed");
+                    }
+                }
+                bool updateSuccess = PlayListLogic.EditPlaylist(playlist);
+                if (updateSuccess)
+                {
+                    HttpContext.Session.SetString("edit", "success");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("edit", "failed");
+                }
+            }
+            else
+            {
+                HttpContext.Session.SetString("edit", "failed");
+            }
+
+            return Redirect($"/playlist/detail/{playlistId}");
         }
     }
 }

@@ -104,10 +104,6 @@ namespace MusicStream.Models
                     .HasColumnType("date")
                     .HasColumnName("releaseDate")
                     .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.View)
-                    .HasColumnName("view")
-                    .HasDefaultValueSql("((0))");
             });
 
             modelBuilder.Entity<AlbumGenre>(entity =>
@@ -154,7 +150,8 @@ namespace MusicStream.Models
                 entity.Property(e => e.Fullname)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("fullname");
+                    .HasColumnName("fullname")
+                    .UseCollation("SQL_Latin1_General_CP1_CI_AI");
 
                 entity.Property(e => e.Image)
                     .IsRequired()
@@ -236,38 +233,38 @@ namespace MusicStream.Models
                     .IsUnicode(false)
                     .HasColumnName("accountID");
 
+                entity.Property(e => e.AlbumId)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("albumId");
+
                 entity.Property(e => e.Content)
                     .IsRequired()
                     .HasMaxLength(300)
                     .HasColumnName("content");
 
-                entity.Property(e => e.ParentId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("parentID");
+                entity.Property(e => e.CreatedTime)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createdTime")
+                    .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.TrackId)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("trackID");
+                entity.Property(e => e.UpdateTime)
+                    .HasColumnType("datetime")
+                    .HasColumnName("updateTime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Comment__account__4F7CD00D");
+                    .HasConstraintName("FK__Comment__account__40058253");
 
-                entity.HasOne(d => d.Parent)
-                    .WithMany(p => p.InverseParent)
-                    .HasForeignKey(d => d.ParentId)
-                    .HasConstraintName("FK__Comment__parentI__5165187F");
-
-                entity.HasOne(d => d.Track)
+                entity.HasOne(d => d.Album)
                     .WithMany(p => p.Comments)
-                    .HasForeignKey(d => d.TrackId)
+                    .HasForeignKey(d => d.AlbumId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Comment__trackID__5070F446");
+                    .HasConstraintName("FK__Comment__albumId__40F9A68C");
             });
 
             modelBuilder.Entity<Genre>(entity =>
@@ -433,7 +430,8 @@ namespace MusicStream.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("name");
+                    .HasColumnName("name")
+                    .UseCollation("SQL_Latin1_General_CP1_CI_AI");
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Playlists)
@@ -483,7 +481,8 @@ namespace MusicStream.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("name");
+                    .HasColumnName("name")
+                    .UseCollation("SQL_Latin1_General_CP1_CI_AI");
 
                 entity.Property(e => e.View)
                     .HasColumnName("view")

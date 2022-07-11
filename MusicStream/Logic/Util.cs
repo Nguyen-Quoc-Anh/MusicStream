@@ -113,5 +113,20 @@ namespace MusicStream.Logic
             }
             return null;
         }
+
+        public static bool DeleteFile(IWebHostEnvironment webHostEnvironment, string fileName)
+        {
+            try
+            {
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "img/playlist/");
+                string filePath = Path.Combine(uploadsFolder, fileName);
+                File.Delete(filePath);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

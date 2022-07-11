@@ -27,7 +27,6 @@ create table Album (
 	albumName nvarchar(200) not null,
 	image nvarchar(max) not null,
 	releaseDate date default getDate(),
-	[view] int default 0
 )
 
 create table Artist_Album(
@@ -93,8 +92,9 @@ create table Comment(
 	commentID varchar(50) primary key not null,
 	content nvarchar(300) not null,
 	accountID varchar(50) references Account(accountID) not null,
-	trackID varchar(50) references Track(trackID) not null,
-	parentID varchar(50) references Comment(commentID)
+	albumId varchar(50) references Album(albumId) not null,
+	createdTime datetime default getDate(),
+	updateTime datetime default getDate()
 )
 
 create table PlayListFollow (

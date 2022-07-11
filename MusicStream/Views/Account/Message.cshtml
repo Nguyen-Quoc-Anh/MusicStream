@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+*@
+@{
+    Layout = "";
+}
+<div class="container">
+    <h3 style="text-align: center">@ViewBag.Message</h3>
+</div>
+
+@if (ViewBag.Message.Contains("thành công"))
+{
+    <script>
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            let expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+        setCookie("success", "ok", 1)
+        setTimeout(() => {
+            window.close();
+        }, 1500);
+    </script>
+}
+else {
+    <script>
+        setTimeout(() => {
+            window.close();
+        }, 2000);
+    </script>
+}

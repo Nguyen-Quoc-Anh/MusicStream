@@ -405,7 +405,7 @@
 			<div class="plyr__volume">
 				<input data-plyr="volume" type="range" min="0" max="1" step="0.05" value="1" autocomplete="off" aria-label="Volume">
 			</div>
-
+            <p style="display: none;" id="trackId"></p>
 			<a href="" id="playlist__controll" class="plyr__control" aria-label="Playlist">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15,13H9a1,1,0,0,0,0,2h6a1,1,0,0,0,0-2Zm0-4H9a1,1,0,0,0,0,2h6a1,1,0,0,0,0-2ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"/></svg>
 				<span class="plyr__tooltip" role="tooltip">Playlist</span>
@@ -423,6 +423,16 @@
     player.on('play', event => {
         $('a[data-link].active, a[data-playlist].active').addClass('play');
         $('a[data-link].active, a[data-playlist].active').removeClass('pause');
+        setInterval(() => {
+            if (((audio["0"].currentTime / audio["0"].duration) > 0.5) && !sessionStorage.getItem("trackId")) {
+                sessionStorage.setItem("trackId", $('#trackId')["0"].text)
+                $.ajax({
+                    url: `/track/increaselistens/${$('#trackId')["0"].text}`,
+                    type: 'PUT'
+                });
+            }
+        }, 1000)
+
     });
 
     player.on('pause', event => {
@@ -461,14 +471,18 @@
             let artist = $(link).data('artist');
             let img = $(link).data('img');
             let linkTo = $(link).data('link');
+            let id = $(link).data('track');
             $('#playlist__controll').attr('href', linkTo);
             $('.player__title').text(title);
             $('.player__artist').text(artist);
             $('.player__cover img').attr('src', img);
+            $('#trackId')["0"].text = id;
+            sessionStorage.removeItem("trackId")
             audio[0].load();
             audio[0].play();
             var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             let trackObj = {};
+            trackObj["id"] = id;
             trackObj["name"] = title;
             trackObj["image"] = img;
             trackObj["link"] = linkTo;
@@ -479,7 +493,7 @@
                 wishlist["items"].splice(current, 0, trackObj);
             } else {
                 wishlist = {
-                    items: [].push(trackObj)
+                    "items": [trackObj]
                 }
             }
             sessionStorage.setItem("wishlist", JSON.stringify(wishlist));
@@ -491,6 +505,7 @@
         mp3Obj["img"] = $(link).data('img');
         mp3Obj["link"] = $(link).data('link');
         mp3Obj["mp3"] = `/${src[3]}/${src[4]}`;
+        mp3Obj["id"] = $(link).data('track');
         sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
     }
 
@@ -605,6 +620,7 @@
             }
             link = list["items"][current];
             sessionStorage.setItem("currentTrack", current)
+            sessionStorage.removeItem("trackId")
             run3(link, audio[0]);
         });
 
@@ -616,6 +632,7 @@
             }
             link = list["items"][current];
             sessionStorage.setItem("currentTrack", current)
+            sessionStorage.removeItem("trackId")
             run3(link, audio[0]);
         });
 
@@ -628,10 +645,14 @@
             let title = link["name"];
             let artist = link["artist"];
             let img = link["image"];
+            let id = link["id"];
             $('.player__title').text(title);
             $('.player__artist').text(artist);
             $('.player__cover img').attr('src', img);
             $('#playlist__controll').attr('href', link["link"]);
+            $('#trackId')["0"].text = id;
+            sessionStorage.removeItem("trackId")
+
             audio[0].load();
             $('#button__Control').click();
             audio[0].play();
@@ -641,16 +662,23 @@
             mp3Obj["img"] = img;
             mp3Obj["link"] = link["link"];
             mp3Obj["mp3"] = link["mp3"];
+            mp3Obj["id"] = link["id"];
             sessionStorage.setItem("mp3obj", JSON.stringify(mp3Obj));
         }
 
-        //if (document.getElementById("audio").src.includes("/album/detail/")) {
-        //    var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
-        //    link = list["items"][current];
-        //    sessionStorage.setItem("currentTrack", current)
-        //    run3(link, audio[0]);
-        //    $('#button__Control').click();
-        //}
+        player.on('play', event => {
+            setInterval(() => {
+                if (((audio["0"].currentTime / audio["0"].duration) > 0.5) && !sessionStorage.getItem("trackId")) {
+                    sessionStorage.setItem("trackId", $('#trackId')["0"].text)
+                    $.ajax({
+                        url: `/track/increaselistens/${$('#trackId')["0"].text}`,
+                        type: 'PUT'
+                    });
+                }
+            }, 1000)
+
+        });
+
     }
 
     var song = document.getElementById('audio');
@@ -668,6 +696,7 @@
                 $('#playlist__controll').attr('href', mp3Obj["link"]);
                 $('.player__cover img').attr('src', mp3Obj["img"]);
                 $('#audio').attr('src', mp3Obj["mp3"]);
+                $('#trackId')["0"].text = mp3Obj["id"];
                 $('#button__Control').click();
             }
             played = true;

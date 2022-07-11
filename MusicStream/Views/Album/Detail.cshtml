@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using MusicStream.Logic
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -49,7 +50,7 @@
                             <span>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                     <path d="M20,13.18V11A8,8,0,0,0,4,11v2.18A3,3,0,0,0,2,16v2a3,3,0,0,0,3,3H8a1,1,0,0,0,1-1V14a1,1,0,0,0-1-1H6V11a6,6,0,0,1,12,0v2H16a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1h3a3,3,0,0,0,3-3V16A3,3,0,0,0,20,13.18ZM7,15v4H5a1,1,0,0,1-1-1V16a1,1,0,0,1,1-1Zm13,3a1,1,0,0,1-1,1H17V15h2a1,1,0,0,1,1,1Z" />
-                                </svg> @(Model.View)
+                                </svg>@(Model.Tracks.Sum(s => s.View))
                             </span>
                         </div>
                         <button class="release__buy" id="addtowishlist">Thêm vào danh sách phát</button>
@@ -60,7 +61,7 @@
                             @foreach (var item in Model.Tracks)
                             {
                                 <li class="single-item">
-                                    <a data-link data-playlist data-title="@item.Name" data-link="/album/detail/@item.AlbumId"
+                                    <a data-link data-playlist data-title="@item.Name" data-link="/album/detail/@item.AlbumId" data-track="@item.TrackId"
                                    data-artist="@foreach (var artist in item.ArtistTracks)
                                                 {
                                                     @artist.Artist.Fullname @((item.ArtistTracks.ToList().IndexOf(artist) != item.ArtistTracks.Count - 1) ? "&" : "")
@@ -75,7 +76,7 @@
                                     </a>
                                     <div class="single-item__title">
                                         <h4>
-                                            <a data-link data-title="@item.Name" data-link="/album/detail/@item.AlbumId" data-artist="@foreach (var artist in item.ArtistTracks)
+                                            <a data-link data-title="@item.Name" data-link="/album/detail/@item.AlbumId" data-track="@item.TrackId" data-artist="@foreach (var artist in item.ArtistTracks)
                                                 {
                                                     @artist.Artist.Fullname @((item.ArtistTracks.ToList().IndexOf(artist) != item.ArtistTracks.Count - 1) ? "&" : "")
                                                 }" data-img="@item.Image" href="@item.Mp3">@item.Name</a>
@@ -134,7 +135,7 @@
                                          version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 24 24"
                                          style="enable-background:new 0 0 230 230;" xml:space="preserve">
                                         <path d="M213.588,120.982L115,213.445l-98.588-92.463C-6.537,96.466-5.26,57.99,19.248,35.047l2.227-2.083  c24.51-22.942,62.984-21.674,85.934,2.842L115,43.709l7.592-7.903c22.949-24.516,61.424-25.784,85.936-2.842l2.227,2.083  C235.26,57.99,236.537,96.466,213.588,120.982z" />
-                                                                                                </svg>
+                                                                                                                                        </svg>
                                     </a>
                                     <span class="single-item__time">@TimeSpan.FromSeconds(Convert.ToDouble(item.Duration)).ToString(@"mm\:ss")</span>
                                 </li>
@@ -176,149 +177,90 @@
                     <!-- comments -->
                     <div class="comments">
                         <div class="comments__title">
-                            <h4>Comments</h4>
-                            <span>3</span>
+                            <h4>Bình luận</h4>
+                            <span id="total-comment">@Model.Comments.Count</span>
                         </div>
 
                         <ul class="comments__list">
-                            <li class="comments__item">
-                                <div class="comments__autor">
-                                    <img class="comments__avatar" src="img/avatar.svg" alt="">
-                                    <span class="comments__name">John Doe</span>
-                                    <span class="comments__time">30.08.2021, 17:53</span>
-                                </div>
-                                <p class="comments__text">
-                                    There are many variations of passages of Lorem Ipsum
-                                    available, but the majority have suffered alteration in some form, by injected
-                                    humour, or randomised words which don't look even slightly believable. If you are
-                                    going to use a passage of Lorem Ipsum, you need to be sure there isn't anything
-                                    embarrassing hidden in the middle of text.
-                                </p>
-                                <div class="comments__actions">
-                                    <div class="comments__rate">
-                                        <button type="button">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z" />
-                                                <path d="M13 16V8C13 7.73478 12.8946 7.48043 12.7071 7.29289C12.5196 7.10536 12.2652 7 12 7C11.7348 7 11.4804 7.10536 11.2929 7.29289C11.1054 7.48043 11 7.73478 11 8V16C11 16.2652 11.1054 16.5196 11.2929 16.7071C11.4804 16.8946 11.7348 17 12 17C12.2652 17 12.5196 16.8946 12.7071 16.7071C12.8946 16.5196 13 16.2652 13 16Z" />
-                                            </svg> 12
-                                        </button>
 
-                                        <button type="button">
-                                            7 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                            @foreach (var comment in Model.Comments)
+                            {
+                                @if (ViewBag.AccountId != null && ViewBag.AccountId.Equals(comment.AccountId))
+                                {
+                                    <li class="comments__item" id="@comment.CommentId">
+                                        <div class="comments__autor">
+                                            <img class="comments__avatar" src="@comment.Account.Image" alt="">
+                                            <span class="comments__name">Bạn</span>
+                                            @if (DateTime.Compare(Convert.ToDateTime(comment.CreatedTime), Convert.ToDateTime(comment.UpdateTime)) == 0)
+                                            {
+                                                <span class="comments__time">@Util.CalculateTimeAgo(Convert.ToDateTime(comment.CreatedTime))</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="comments__time">@Util.CalculateTimeAgo(Convert.ToDateTime(comment.UpdateTime)) đã chỉnh sửa</span>
+                                            }
+                                        </div>
+                                        <p class="comments__text">
+                                            @comment.Content
+                                        </p>
+                                        <div class="comments__actions">
+                                            <button type="button" onclick="editComment('@comment.CommentId')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M18 14.45v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023zm1.473-10.615l1.707 1.707-9.281 9.378-2.23.472.512-2.169 9.292-9.388zm-.008-2.835l-11.104 11.216-1.361 5.784 5.898-1.248 11.103-11.218-4.536-4.534z" /></svg>
+                                                <span>Edit</span>
+                                            </button>
+                                            <button type="button" href="#modal-delete" onclick="setId('@comment.CommentId')" class="open-modal">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23 20.168l-8.185-8.187 8.185-8.174-2.832-2.807-8.182 8.179-8.176-8.179-2.81 2.81 8.186 8.196-8.186 8.184 2.81 2.81 8.203-8.192 8.18 8.192z" /></svg>
+                                                <span>Delete</span>
+                                            </button>
+                                        </div>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="comments__item">
+                                        <div class="comments__autor">
+                                            <img class="comments__avatar" src="@comment.Account.Image" alt="">
+                                            <span class="comments__name">@comment.Account.Fullname</span>
+                                            @if (DateTime.Compare(Convert.ToDateTime(comment.CreatedTime), Convert.ToDateTime(comment.UpdateTime)) == 0)
+                                            {
+                                                <span class="comments__time">@Util.CalculateTimeAgo(Convert.ToDateTime(comment.CreatedTime))</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="comments__time">@Util.CalculateTimeAgo(Convert.ToDateTime(comment.UpdateTime)) đã chỉnh sửa</span>
+                                            }
+                                        </div>
+                                        <p class="comments__text">
+                                            @comment.Content
+                                        </p>
+                                    </li>
+                                }
 
-                                    <button type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M21.707,11.293l-8-8A.99991.99991,0,0,0,12,4V7.54492A11.01525,11.01525,0,0,0,2,18.5V20a1,1,0,0,0,1.78418.62061,11.45625,11.45625,0,0,1,7.88672-4.04932c.0498-.00635.1748-.01611.3291-.02588V20a.99991.99991,0,0,0,1.707.707l8-8A.99962.99962,0,0,0,21.707,11.293ZM14,17.58594V15.5a.99974.99974,0,0,0-1-1c-.25488,0-1.2959.04932-1.56152.085A14.00507,14.00507,0,0,0,4.05176,17.5332,9.01266,9.01266,0,0,1,13,9.5a.99974.99974,0,0,0,1-1V6.41406L19.58594,12Z" />
-                                        </svg><span>Reply</span>
-                                    </button>
-                                    <button type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M10.3,10.75A1,1,0,1,0,9,9.25,3,3,0,1,1,7,4,3,3,0,0,1,9.23,5H8A1,1,0,0,0,8,7h3a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0h0a5,5,0,1,0,.3,7.75ZM19,6H15a1,1,0,0,0,0,2h4a1,1,0,0,1,1,1v9.72l-1.57-1.45a1,1,0,0,0-.68-.27H9a1,1,0,0,1-1-1V15a1,1,0,0,0-2,0v1a3,3,0,0,0,3,3h8.36l3,2.73A1,1,0,0,0,21,22a1.1,1.1,0,0,0,.4-.08A1,1,0,0,0,22,21V9A3,3,0,0,0,19,6Z" />
-                                        </svg><span>Quote</span>
-                                    </button>
-                                </div>
-                            </li>
-
-                            <li class="comments__item comments__item--answer">
-                                <div class="comments__autor">
-                                    <img class="comments__avatar" src="img/avatar.svg" alt="">
-                                    <span class="comments__name">John Doe</span>
-                                    <span class="comments__time">24.08.2021, 16:41</span>
-                                </div>
-                                <p class="comments__text">
-                                    Lorem Ipsum is simply dummy text of the printing and
-                                    typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever
-                                    since the 1500s, when an unknown printer took a galley of type and scrambled it to
-                                    make a type specimen book.
-                                </p>
-                                <div class="comments__actions">
-                                    <div class="comments__rate">
-                                        <button type="button">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z" />
-                                                <path d="M13 16V8C13 7.73478 12.8946 7.48043 12.7071 7.29289C12.5196 7.10536 12.2652 7 12 7C11.7348 7 11.4804 7.10536 11.2929 7.29289C11.1054 7.48043 11 7.73478 11 8V16C11 16.2652 11.1054 16.5196 11.2929 16.7071C11.4804 16.8946 11.7348 17 12 17C12.2652 17 12.5196 16.8946 12.7071 16.7071C12.8946 16.5196 13 16.2652 13 16Z" />
-                                            </svg> 10
-                                        </button>
-
-                                        <button type="button">
-                                            0 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-
-                                    <button type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M21.707,11.293l-8-8A.99991.99991,0,0,0,12,4V7.54492A11.01525,11.01525,0,0,0,2,18.5V20a1,1,0,0,0,1.78418.62061,11.45625,11.45625,0,0,1,7.88672-4.04932c.0498-.00635.1748-.01611.3291-.02588V20a.99991.99991,0,0,0,1.707.707l8-8A.99962.99962,0,0,0,21.707,11.293ZM14,17.58594V15.5a.99974.99974,0,0,0-1-1c-.25488,0-1.2959.04932-1.56152.085A14.00507,14.00507,0,0,0,4.05176,17.5332,9.01266,9.01266,0,0,1,13,9.5a.99974.99974,0,0,0,1-1V6.41406L19.58594,12Z" />
-                                        </svg><span>Reply</span>
-                                    </button>
-                                    <button type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M10.3,10.75A1,1,0,1,0,9,9.25,3,3,0,1,1,7,4,3,3,0,0,1,9.23,5H8A1,1,0,0,0,8,7h3a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0h0a5,5,0,1,0,.3,7.75ZM19,6H15a1,1,0,0,0,0,2h4a1,1,0,0,1,1,1v9.72l-1.57-1.45a1,1,0,0,0-.68-.27H9a1,1,0,0,1-1-1V15a1,1,0,0,0-2,0v1a3,3,0,0,0,3,3h8.36l3,2.73A1,1,0,0,0,21,22a1.1,1.1,0,0,0,.4-.08A1,1,0,0,0,22,21V9A3,3,0,0,0,19,6Z" />
-                                        </svg><span>Quote</span>
-                                    </button>
-                                </div>
-                            </li>
-
-                            <li class="comments__item">
-                                <div class="comments__autor">
-                                    <img class="comments__avatar" src="img/avatar.svg" alt="">
-                                    <span class="comments__name">John Doe</span>
-                                    <span class="comments__time">07.08.2021, 14:33</span>
-                                </div>
-                                <p class="comments__text">
-                                    There are many variations of passages of Lorem Ipsum
-                                    available, but the majority have suffered alteration in some form, by injected
-                                    humour, or randomised words which don't look even slightly believable. If you are
-                                    going to use a passage of Lorem Ipsum, you need to be sure there isn't anything
-                                    embarrassing hidden in the middle of text.
-                                </p>
-                                <div class="comments__actions">
-                                    <div class="comments__rate">
-                                        <button type="button">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z" />
-                                                <path d="M13 16V8C13 7.73478 12.8946 7.48043 12.7071 7.29289C12.5196 7.10536 12.2652 7 12 7C11.7348 7 11.4804 7.10536 11.2929 7.29289C11.1054 7.48043 11 7.73478 11 8V16C11 16.2652 11.1054 16.5196 11.2929 16.7071C11.4804 16.8946 11.7348 17 12 17C12.2652 17 12.5196 16.8946 12.7071 16.7071C12.8946 16.5196 13 16.2652 13 16Z" />
-                                            </svg> 7
-                                        </button>
-
-                                        <button type="button">
-                                            4 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-
-                                    <button type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M21.707,11.293l-8-8A.99991.99991,0,0,0,12,4V7.54492A11.01525,11.01525,0,0,0,2,18.5V20a1,1,0,0,0,1.78418.62061,11.45625,11.45625,0,0,1,7.88672-4.04932c.0498-.00635.1748-.01611.3291-.02588V20a.99991.99991,0,0,0,1.707.707l8-8A.99962.99962,0,0,0,21.707,11.293ZM14,17.58594V15.5a.99974.99974,0,0,0-1-1c-.25488,0-1.2959.04932-1.56152.085A14.00507,14.00507,0,0,0,4.05176,17.5332,9.01266,9.01266,0,0,1,13,9.5a.99974.99974,0,0,0,1-1V6.41406L19.58594,12Z" />
-                                        </svg><span>Reply</span>
-                                    </button>
-                                    <button type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                            <path d="M10.3,10.75A1,1,0,1,0,9,9.25,3,3,0,1,1,7,4,3,3,0,0,1,9.23,5H8A1,1,0,0,0,8,7h3a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0h0a5,5,0,1,0,.3,7.75ZM19,6H15a1,1,0,0,0,0,2h4a1,1,0,0,1,1,1v9.72l-1.57-1.45a1,1,0,0,0-.68-.27H9a1,1,0,0,1-1-1V15a1,1,0,0,0-2,0v1a3,3,0,0,0,3,3h8.36l3,2.73A1,1,0,0,0,21,22a1.1,1.1,0,0,0,.4-.08A1,1,0,0,0,22,21V9A3,3,0,0,0,19,6Z" />
-                                        </svg><span>Quote</span>
-                                    </button>
-                                </div>
-                            </li>
+                            }
                         </ul>
 
-                        <form action="#" class="comments__form">
+                        <form action="/comment/addcomment/@Model.AlbumId" method="post" class="comments__form" id="cmt-form">
                             <div class="sign__group">
                                 <textarea id="text" name="text" class="sign__textarea"
-                                          placeholder="Add comment"></textarea>
+                                          placeholder="Viết bình luận"></textarea>
                             </div>
-                            <button type="button" class="sign__btn">Send</button>
+                            <input type="hidden" value="@Model.AlbumId" name="Id" />
+                            @if (ViewBag.AccountId == null)
+                            {
+                                <button type="button" href="#modal-buy" class="sign__btn open-modal">Đăng bình luận</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="sign__btn">Đăng bình luận</button>
+                            }
+                        </form>
+                        <form action="/comment/editcomment/@Model.AlbumId" method="post" style="display: none" class="comments__form" id="edit-cmt-form">
+                            <div class="sign__group">
+                                <textarea id="text2" name="text" class="sign__textarea"
+                                          placeholder="Viết bình luận"></textarea>
+                            </div>
+                            <input type="hidden" name="commentId" id="editcmtId" />
+                            <button type="submit" class="sign__btn">Chỉnh sửa bình luận</button>
                         </form>
                     </div>
                     <!-- end comments -->
@@ -368,7 +310,6 @@
     </div>
 </main>
 <!-- end main content -->
-
 <!-- modal info -->
 <div id="modal-info2" class="zoom-anim-dialog mfp-hide modal modal--info">
     <span class="modal__icon modal__icon--green">
@@ -455,12 +396,91 @@
 <!-- end modal info -->
 <!-- The Modal -->
 
+<div id="modal-info10" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Thêm bình luận thành công</h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-info11" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Thêm bình luận thất bại</h4>
+</div>
+
+<div id="modal-info12" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Xóa bình luận thành công</h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-info13" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Xóa bình luận thất bại</h4>
+</div>
+
+<div id="modal-delete" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <button class="modal__close" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg>
+    </button>
+
+    <h2 class="sign__title mt-3" style="text-align: center;">Bạn có thật sự muốn xóa bình luận này hay không</h2>
+    <button class="release__buy" id="delete-comment">Xóa</button>
+</div>
+
+
+<div id="modal-info14" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Chỉnh sửa bình luận thành công</h4>
+</div>
+
+<div id="modal-info15" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Chỉnh sửa bình luận thất bại</h4>
+</div>
 
 
 <div style="display: none">
     <a href="#modal-info2" id="info2" class="open-modal">Modal success</a>
     <a href="#modal-info3" id="if3" class="open-modal">Modal failed</a>
     <a href="#modal-info4" id="if4" class="open-modal">Modal playlist</a>
+    <a href="#modal-info10" id="if10" class="open-modal">Modal success</a>
+    <a href="#modal-info11" id="if11" class="open-modal">Modal failed</a>
+    <a href="#modal-info12" id="if12" class="open-modal">Modal success</a>
+    <a href="#modal-info13" id="if13" class="open-modal">Modal failed</a>
+    <a href="#modal-info14" id="if14" class="open-modal">Modal success</a>
+    <a href="#modal-info15" id="if15" class="open-modal">Modal failed</a>
 </div>
 @section Scripts {
 <script>
@@ -495,6 +515,7 @@
             var collectData = [];
             JSON.parse(data).forEach(d => {
                 let trackObj = {};
+                trackObj["id"] = d["TrackId"];
                 trackObj["name"] = d["Name"];
                 trackObj["image"] = d["Image"];
                 trackObj["link"] = `/album/detail/${d["Album"]["AlbumId"]}`;
@@ -547,6 +568,57 @@
         sessionStorage.setItem("trackId", trackId);
         $("#if4").click();
     }
+     function openCommentAddModalSuccess() {
+        $("#if10").click();
+    }
+    function openCommentAddModalFailed() {
+        $("#if11").click();
+    }
+
+    function openCommentEditModalSuccess() {
+        $("#if14").click();
+    }
+    function openCommentEditModalFailed() {
+        $("#if15").click();
+    }
+
+    $('#delete-comment').on("click", () => {
+        if (cmtId) {
+            $.ajax({
+                url: `/comment/deletecomment/${cmtId}`,
+                type: 'DELETE',
+                success: function(result) {
+                    result = JSON.parse(result);
+                    console.log(result)
+                    if (result["Success"])
+                    {
+                        $('#if12').click();
+                        $(`#${cmtId}`).hide();
+                        $('#total-comment')[0].innerHTML = parseInt($('#total-comment')[0].innerHTML) - 1;
+                    } else {
+                        $('#if13').click();
+                    }
+                }
+            });
+        }
+    })
+
+    var cmtId;
+    var topPos = $('#cmt-form').offset().top + $('#cmt-form').parent().scrollTop() - $('#cmt-form').offsetParent().offset().top;
+    function setId (commentId) {
+        cmtId = commentId;
+    }
+
+    function editComment (comID) {
+        cmtId = comID;
+        $(".main").scrollTop(topPos);
+        $('#cmt-form').hide();
+        $('#edit-cmt-form').show();
+        console.log($(`#${comID}`))
+        $('#editcmtId')[0].value = comID;
+        $('#text2')[0].value = $(`#${comID}`)[0].childNodes[3].innerText;
+    }
+
 
     function addToPlayList(playListId) {
         var trackId = sessionStorage.getItem("trackId");
@@ -567,6 +639,13 @@
             });
         }
     }
-
+    $( document ).ready(function() {
+        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("addcomment")) ? "" : Accessor.HttpContext.Session.GetString("addcomment").Equals("success") ? "openCommentAddModalSuccess()" : "openCommentAddModalFailed()")
+        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("editcomment")) ? "" : Accessor.HttpContext.Session.GetString("editcomment").Equals("success") ? "openCommentEditModalSuccess()" : "openCommentEditModalFailed()")
+    });
+    @{
+        Accessor.HttpContext.Session.Remove("addcomment");
+        Accessor.HttpContext.Session.Remove("editcomment");
+    }
 </script>
 }

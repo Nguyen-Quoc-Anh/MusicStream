@@ -153,5 +153,24 @@ namespace MusicStream.Controllers.Logic
                 return context.LikeTracks.Any(t => t.AccountId == accountId && t.TrackId == trackId);
             }
         }
+
+        public static bool CheckTrackExistById(string Id)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Tracks.Any(t => t.TrackId.Equals(Id));
+            }
+        }
+
+        public static void IncreaseListens(string Id)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                Track track = context.Tracks.FirstOrDefault(t => t.TrackId == Id);
+                track.View++;
+                context.Tracks.Update(track);
+                context.SaveChanges();
+            }
+        }
     }
 }

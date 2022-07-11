@@ -22,9 +22,11 @@ namespace MusicStream.Controllers
             if (account != null)
             {
                 ViewData["playLists"] = PlayListLogic.GetAllPlayListByAccountId(account.AccountId);
+                ViewBag.AccountId = account.AccountId;
             }
             ViewData["album"] = album;
             ViewData["recommendAlbum"] = recommendAlbum;
+            ViewBag.ReturnUrl = $"/album/detail/{id}";
             return View(album);
         }
 
@@ -40,5 +42,7 @@ namespace MusicStream.Controllers
             settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             return JsonConvert.SerializeObject(tracks, settings);
         }
+
+
     }
 }

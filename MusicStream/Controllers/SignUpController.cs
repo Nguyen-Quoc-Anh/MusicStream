@@ -41,7 +41,7 @@ namespace MusicStream.Controllers
             account.AccountId = accountID;
             account.RoleId = 2;
             account.Fullname = Name;
-            account.Image = "~/img/avatar/avatar.jpg";
+            account.Image = "/img/avatar/avatar.jpg";
             string verifiCode = Util.RandomString(10);
             MailRequest mailRequest = new MailRequest();
             mailRequest.Subject = "Mã xác minh của bạn";

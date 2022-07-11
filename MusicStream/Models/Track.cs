@@ -10,7 +10,6 @@ namespace MusicStream.Models
         public Track()
         {
             ArtistTracks = new HashSet<ArtistTrack>();
-            Comments = new HashSet<Comment>();
             GenreOfTracks = new HashSet<GenreOfTrack>();
             LikeTracks = new HashSet<LikeTrack>();
             PlayListTracks = new HashSet<PlayListTrack>();
@@ -26,7 +25,6 @@ namespace MusicStream.Models
 
         public virtual Album Album { get; set; }
         public virtual ICollection<ArtistTrack> ArtistTracks { get; set; }
-        public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<GenreOfTrack> GenreOfTracks { get; set; }
         public virtual ICollection<LikeTrack> LikeTracks { get; set; }
         public virtual ICollection<PlayListTrack> PlayListTracks { get; set; }

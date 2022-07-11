@@ -11,14 +11,14 @@ namespace MusicStream.Controllers
     public class SignInController : Controller
     {
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string returnUrl)
         {
-
+            ViewBag.ReturnUrl = returnUrl;
             return View("Index");
         }
 
         [HttpPost]
-        public IActionResult SignIn(string Email, string Password, string Remember)
+        public IActionResult SignIn(string Email, string Password, string Remember, string returnUrl)
         {
             Account account = AccountLogic.SignIn(Email, Password);
             if (account != null)
@@ -30,7 +30,14 @@ namespace MusicStream.Controllers
                     Response.Cookies.Append("account", account.AccountId, cookie);
                 }
                 HttpContext.Session.SetString("account", JsonConvert.SerializeObject(account));
-                return Redirect("/");
+                if (returnUrl != null)
+                {
+                    return Redirect(returnUrl);
+                }
+                else
+                {
+                    return Redirect("/");
+                }
             }
             else
             {

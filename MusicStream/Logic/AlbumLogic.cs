@@ -34,7 +34,9 @@ namespace MusicStream.Controllers.Logic
             using (var context = new MusicStreamingContext())
             {
                 return context.Albums.Include(a => a.Tracks).ThenInclude(a => a.ArtistTracks).ThenInclude(a => a.Artist)
-                    .Include(a => a.ArtistAlbums).ThenInclude(a => a.Artist).FirstOrDefault(a => a.AlbumId == id);
+                    .Include(a => a.ArtistAlbums).ThenInclude(a => a.Artist)
+                    .Include(a => a.Comments).ThenInclude(a => a.Account)
+                    .FirstOrDefault(a => a.AlbumId == id);
             }
         }
 

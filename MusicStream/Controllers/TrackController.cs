@@ -25,5 +25,14 @@ namespace MusicStream.Controllers
             }
             return JsonConvert.SerializeObject(new Action("like", false));
         }
+
+        [HttpPut]
+        public void IncreaseListens(string Id)
+        {
+            if (TrackLogic.CheckTrackExistById(Id))
+            {
+                TrackLogic.IncreaseListens(Id);
+            }
+        }
     }
 }

@@ -152,7 +152,7 @@
                             @foreach (var item in (Dictionary<Track, List<Artist>>)ViewData["popularTracks"])
                             {
                                 <li class="single-item">
-                                    <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
+                                    <a data-link  data-track="@item.Key.TrackId" data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                    data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
@@ -170,7 +170,7 @@
                                     </a>
                                     <div class="single-item__title">
                                         <h4>
-                                            <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
+                                            <a data-link  data-track="@item.Key.TrackId" data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                            data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
@@ -212,7 +212,7 @@
                             @foreach (var item in (Dictionary<Track, List<Artist>>)ViewData["tracks"])
                             {
                                 <li class="single-item">
-                                    <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
+                                    <a data-link  data-track="@item.Key.TrackId" data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                    data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")
@@ -230,7 +230,7 @@
                                     </a>
                                     <div class="single-item__title">
                                         <h4>
-                                            <a data-link data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
+                                            <a data-link  data-track="@item.Key.TrackId" data-title="@item.Key.Name" data-link="/album/detail/@item.Key.AlbumId"
                                            data-artist="@foreach (Artist artist in item.Value)
                                                 {
                                                     @artist.Fullname @((item.Value.IndexOf(artist) != item.Value.Count - 1) ? "&" : "")

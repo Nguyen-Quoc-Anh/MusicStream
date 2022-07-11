@@ -50,7 +50,6 @@ namespace MusicStreamingver1.Controllers
             page = page < 1 ? 1 : page;
             key = string.IsNullOrEmpty(key) ? "" : key;
             var trackList = GetListTrackByFilter(artists, genres, key, sort);
-            page = (page > (trackList.Count / 12)) ? trackList.Count / 12 : page;
             ViewData["artists"] = GetAllArtistAsMultiSelectList();
             ViewData["genres"] = GetAllGenresAsMultiSelectList();
             ViewData["sort"] = sort;

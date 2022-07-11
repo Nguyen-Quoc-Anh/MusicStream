@@ -55,12 +55,13 @@
                             }
                             else
                             {
-                                <button class="release__buy" style="background-color: cornflowerblue" id="followplaylist">Theo dõi</button>
+                                <button class="release__buy" style="background-color: cornflowerblue;  @(ViewBag.IsAccountFollow != null ? "display: none; " : "")" id="followplaylist">Theo dõi</button>
+                                <button class="release__buy" style="background-color: #fc8b6f; @(ViewBag.IsAccountFollow != null ? "" : "display: none; ")" id="unfollowplaylist">Bỏ theo dõi</button>
                             }
                         }
                         else
                         {
-                            <button class="release__buy" id="edit">Chỉnh sửa playlist</button>
+                            <button href="#modal-edit" class="release__buy open-modal" id="edit">Chỉnh sửa playlist</button>
                             <button href="#modal-delete" class="release__buy open-modal" style="background-color: #fc8b6f">Xóa playlist</button>
                         }
                     </div>
@@ -72,7 +73,7 @@
                                 @foreach (var item in Model.PlayListTracks)
                                 {
                                     <li class="single-item" id="@item.TrackId">
-                                        <a data-link data-playlist data-title="@item.Track.Name" data-link="/album/detail/@item.Track.AlbumId"
+                                        <a data-link  data-track="@item.TrackId" data-playlist data-title="@item.Track.Name" data-link="/album/detail/@item.Track.AlbumId"
                                    data-artist="@foreach (var artist in item.Track.ArtistTracks)
                                                 {
                                                     @artist.Artist.Fullname @((item.Track.ArtistTracks.ToList().IndexOf(artist) != item.Track.ArtistTracks.Count - 1) ? "&" : "")
@@ -87,7 +88,7 @@
                                         </a>
                                         <div class="single-item__title">
                                             <h4>
-                                                <a data-link data-title="@item.Track.Name" data-link="/album/detail/@item.Track.AlbumId" data-artist="@foreach (var artist in item.Track.ArtistTracks)
+                                                <a data-link  data-track="@item.TrackId" data-title="@item.Track.Name" data-link="/album/detail/@item.Track.AlbumId" data-artist="@foreach (var artist in item.Track.ArtistTracks)
                                                 {
                                                     @artist.Artist.Fullname @((item.Track.ArtistTracks.ToList().IndexOf(artist) != item.Track.ArtistTracks.Count - 1) ? "&" : "")
                                                 }" data-img="@item.Track.Image" href="@item.Track.Mp3">@item.Track.Name</a>
@@ -144,7 +145,7 @@
                                             <button href="" class="single-item__add" style="background-color: #222227; " onclick="removeFromPlaylist('@item.TrackId')">
                                                 <svg style="fill: #c0c0c0; width: 16px; height: 16px; enable-background:new 0 0 460.775 460.775;" width="16" height="16" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 460.775 460.775" xml:space="preserve">
                                                 <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z" />
-                                                                                                            </svg>
+                                                                                                                                                </svg>
                                             </button>
                                         }
                                         <a>
@@ -152,7 +153,7 @@
                                          version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 24 24"
                                          style="enable-background:new 0 0 230 230;" xml:space="preserve">
                                             <path d="M213.588,120.982L115,213.445l-98.588-92.463C-6.537,96.466-5.26,57.99,19.248,35.047l2.227-2.083  c24.51-22.942,62.984-21.674,85.934,2.842L115,43.709l7.592-7.903c22.949-24.516,61.424-25.784,85.936-2.842l2.227,2.083  C235.26,57.99,236.537,96.466,213.588,120.982z" />
-                                                                                    </svg>
+                                                                                                            </svg>
                                         </a>
                                         <span class="single-item__time">@TimeSpan.FromSeconds(Convert.ToDouble(item.Track.Duration)).ToString(@"mm\:ss")</span>
                                     </li>
@@ -328,6 +329,105 @@
 </div>
 <!-- end modal info -->
 
+<div id="modal-info9" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Theo dõi playlist thành công</h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-info10" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Theo dõi playlist thất bại</h4>
+</div>
+<div id="modal-info11" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Bỏ theo dõi playlist thành công</h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-info12" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Bỏ theo dõi playlist thất bại</h4>
+</div>
+
+<div id="modal-info13" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Chỉnh sửa playlist thành công</h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-info14" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Chỉnh sửa playlist thất bại</h4>
+</div>
+<div id="modal-edit" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Chỉnh sửa playlist
+    </h2>
+    <div class="row">
+        <form enctype="multipart/form-data" action="/playlist/editplaylist" method="post" class="sign__form sign__form--contacts">
+            <div class="row">
+                <div class="col-12">
+                    <div class="sign__group">
+                        <input type="text" name="name" class="sign__input" placeholder="Tên Playlist" value="@Model.Name">
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <img id="playlist--img" src="@Model.Image" style="width: 200px; height: auto; border-radius: 20px;" />
+                </div>
+                <div class="col-12 mb-3">
+                    <input type="hidden" name="playlistId" class="sign__input" placeholder="" value="@Model.PlaylistId">
+                </div>
+                <div class="col-12">
+                    <label for="file-upload123" class="custom-file-upload">
+                        <input id="file-upload123" type="file" name="file" />
+                        <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24" viewBox="0 0 24 24"><path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" /></svg>
+                        Tải ảnh lên
+                    </label>
+                </div>
+                <div class="col-12 mt-3">
+                    <div class="sign__group sign__group--checkbox">
+                        <input id="isPrivate" name="isPrivate" type="checkbox" @(Convert.ToBoolean(Model.IsPrivate) ? "checked" : "") value="private">
+                        <label for="isPrivate">Đặt thành riêng tư</label>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-3">
+                    <button type="submit" class="sign__btn">Chỉnh sửa</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <div style="display: none">
     <a href="#modal-info2" id="info2" class="open-modal">Modal success</a>
@@ -335,6 +435,12 @@
     <a href="#modal-info4" id="if4" class="open-modal">Modal playlist</a>
     <a href="#modal-info7" id="if7" class="open-modal">Modal success</a>
     <a href="#modal-info8" id="if8" class="open-modal">Modal failed</a>
+    <a href="#modal-info9" id="if9" class="open-modal">Modal success</a>
+    <a href="#modal-info10" id="if10" class="open-modal">Modal failed</a>
+    <a href="#modal-info11" id="if11" class="open-modal">Modal success</a>
+    <a href="#modal-info12" id="if12" class="open-modal">Modal failed</a>
+    <a href="#modal-info13" id="if13" class="open-modal">Modal success</a>
+    <a href="#modal-info14" id="if14" class="open-modal">Modal failed</a>
 </div>
 @section Scripts {
 <script>
@@ -369,6 +475,7 @@
             var collectData = [];
             JSON.parse(data).forEach(d => {
                 let trackObj = {};
+                trackObj["id"] = d["TrackId"];
                 trackObj["name"] = d["Name"];
                 trackObj["image"] = d["Image"];
                 trackObj["link"] = `/playlist/detail/@Model.PlaylistId`;
@@ -378,7 +485,6 @@
                 }
                 trackObj["artist"] = artists.toString().replaceAll("\"", "").replaceAll(",", " & ");
                 trackObj["mp3"] = d["Mp3"];
-
                 collectData.push(trackObj);
             });
             if (wishlist) {
@@ -472,5 +578,63 @@
             }
         });
     })
+
+    $('#followplaylist').on("click", () => {
+        $.ajax({
+            url: '/playlist/followplaylist/@Model.PlaylistId',
+            type: 'POST',
+            success: function(result) {
+                result = JSON.parse(result);
+                console.log(result)
+                if (result["Success"])
+                {
+                    $('#if9').click();
+                    $('#followplaylist').hide();
+                    $('#unfollowplaylist').show();
+                } else {
+                    $('#if10').click();
+                }
+            }
+        });
+    })
+
+    $('#unfollowplaylist').on("click", () => {
+        $.ajax({
+            url: '/playlist/unfollowplaylist/@Model.PlaylistId',
+            type: 'POST',
+            success: function(result) {
+                result = JSON.parse(result);
+                console.log(result)
+                if (result["Success"])
+                {
+                    $('#if11').click();
+                    $('#unfollowplaylist').hide();
+                    $('#followplaylist').show();
+                } else {
+                    $('#if12').click();
+                }
+            }
+        });
+    });
+
+    $('#file-upload123').change(() => {
+            var img = $('#file-upload123')["0"].files["0"]
+            $("#playlist--img").attr("src", URL.createObjectURL(img));
+    });
+
+    function openEditPlaylistModalSuccess() {
+        $('#if13').click();
+    }
+
+    function openEditPlaylistModalFailed() {
+        $('#if14').click();
+    }
+
+    $(document).ready(function() {
+        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("edit")) ? "" : Accessor.HttpContext.Session.GetString("edit").Equals("success") ? "openEditPlaylistModalSuccess()" : "openEditPlaylistModalFailed()")
+    });
+    @{
+        Accessor.HttpContext.Session.Remove("edit");
+    }
 </script>
 }

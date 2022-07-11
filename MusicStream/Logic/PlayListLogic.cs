@@ -71,6 +71,7 @@ namespace MusicStream.Logic
             using (var context = new MusicStreamingContext())
             {
                 return context.Playlists.Include(p => p.PlayListFollows).ThenInclude(p => p.Account)
+                    .Include(p => p.Account)
                     .Where(p => p.AccountId == accountId || p.PlayListFollows.Any(pl => pl.AccountId == accountId)).ToList();
             }
         }
@@ -150,6 +151,67 @@ namespace MusicStream.Logic
                     playlists = playlists.OrderByDescending(p => p.CreatedTime).ToList();
                 }
                 return playlists;
+            }
+        }
+
+        public static bool IsAccountFollowPlaylist(string accountId, string playlistId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.PlayListFollows.Any(p => p.AccountId == accountId && p.PlaylistId == playlistId);
+            }
+        }
+
+        public static bool FollowPlaylist(string accountId, string playlistId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    PlayListFollow playListFollow = new PlayListFollow() { AccountId = accountId, PlaylistId = playlistId };
+                    context.PlayListFollows.Add(playListFollow);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool UnFollowPlaylist(string accountId, string playlistId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    PlayListFollow playListFollow = new PlayListFollow() { AccountId = accountId, PlaylistId = playlistId };
+                    context.PlayListFollows.Remove(playListFollow);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool EditPlaylist(Playlist playlist)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.Playlists.Update(playlist);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
     }

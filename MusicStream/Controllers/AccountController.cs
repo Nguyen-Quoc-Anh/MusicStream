@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MusicStream.Controllers.Logic;
 using MusicStream.Logic;
 using MusicStream.Models;
+using MusicStream.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,14 +25,15 @@ namespace MusicStream.Controllers
     {
 
 
-        [Route("google-login")]
-        public IActionResult GoogleLogin()
+        [Route("google-signup")]
+        public IActionResult GoogleSignup()
         {
-            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
+            var properties = new AuthenticationProperties { RedirectUri = Url.ActionLink("google-response") };
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        public async Task<JsonResult> GoogleResponse()
+        [Route("google-response")]
+        public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             var claims = result.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
@@ -44,8 +49,8 @@ namespace MusicStream.Controllers
             string email = claims.ElementAt(4).Value;
             if (IsEmailAlreadyInUse(email) || IsIdExist(id))
             {
-                Action action = new Action("Sign In", false);
-                return Json(Newtonsoft.Json.JsonConvert.SerializeObject(action));
+                ViewBag.Message = "Đăng ký thất bại.";
+                return View("Message");
             }
             else
             {
@@ -56,12 +61,71 @@ namespace MusicStream.Controllers
                 account.Password = "";
 
                 account.Fullname = name;
-                account.Image = "~/img/avatar/avatar.jpg";
+                account.Image = "/img/avatar/avatar.jpg";
 
                 RegisterAccount(account);
+                Account acc = AccountLogic.SignInWithGoogle(email, id);
+                CookieOptions cookie = new CookieOptions();
+                cookie.Expires = DateTime.Now.AddMonths(1);
+                Response.Cookies.Append("account", acc.AccountId, cookie);
+                HttpContext.Session.SetString("account", JsonConvert.SerializeObject(acc));
+                ViewBag.Message = "Đăng ký thành công";
+                return View("Message");
+            }
+        }
 
-                Action action = new Action("Sign In", true);
-                return Json(Newtonsoft.Json.JsonConvert.SerializeObject(action));
+        [Route("google-signin")]
+        public IActionResult GoogleSignin()
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.ActionLink("google-signin-response") };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+
+        [Route("google-signin-response")]
+        public async Task<IActionResult> GoogleSigninResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var claims = result.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
+            {
+                claim.Issuer,
+                claim.OriginalIssuer,
+                claim.Type,
+                claim.Value,
+            });
+            claims = claims.ToList();
+            string id = claims.ElementAt(0).Value;
+            string name = claims.ElementAt(1).Value;
+            string email = claims.ElementAt(4).Value;
+            if (!IsIdExist(id) || !IsEmailAlreadyInUse(email))
+            {
+                Account account = new Account();
+                account.AccountId = id;
+                account.Email = email;
+                account.RoleId = 2;
+                account.Password = "";
+
+                account.Fullname = name;
+                account.Image = "/img/avatar/avatar.jpg";
+
+                RegisterAccount(account);
+                Account acc = AccountLogic.SignInWithGoogle(email, id);
+                CookieOptions cookie = new CookieOptions();
+                cookie.Expires = DateTime.Now.AddMonths(1);
+                Response.Cookies.Append("account", acc.AccountId, cookie);
+                HttpContext.Session.SetString("account", JsonConvert.SerializeObject(acc));
+                ViewBag.Message = "Đăng nhập thành công";
+                return View("Message");
+            }
+            else
+            {
+                Account account = AccountLogic.SignInWithGoogle(email, id);
+                CookieOptions cookie = new CookieOptions();
+                cookie.Expires = DateTime.Now.AddMonths(1);
+                Response.Cookies.Append("account", account.AccountId, cookie);
+                HttpContext.Session.SetString("account", JsonConvert.SerializeObject(account));
+                ViewBag.Message = "Đăng nhập thành công";
+                return View("Message");
             }
         }
 
@@ -86,6 +150,81 @@ namespace MusicStream.Controllers
             Response.Cookies.Delete("account");
             HttpContext.Session.Remove("account");
             return LocalRedirect("/");
+        }
+
+        [Route("forgot")]
+        public async Task<IActionResult> ForgotPasswordAsync(string Email, string VerifyCode, string Password, string RePassword)
+        {
+            string step = HttpContext.Session.GetString("ForgotPasswordStep");
+
+            if (step == null || step.Equals("step1"))
+            {
+                if (Email != null)
+                {
+                    if (AccountLogic.IsEmailAlreadyInUse(Email))
+                    {
+                        string verifyCode = Util.RandomString(20);
+                        MailRequest mailRequest = new MailRequest();
+                        mailRequest.Subject = "Mã xác minh của bạn";
+                        mailRequest.Body = "Mã xác minh: " + verifyCode;
+                        mailRequest.ToEmail = Email;
+                        var sendmailservice = HttpContext.RequestServices.GetService<ISendMailService>();
+                        bool success = await sendmailservice.SendEmail(mailRequest);
+                        if (success)
+                        {
+                            HttpContext.Session.SetString("VerifyCode", verifyCode);
+                            HttpContext.Session.SetString("ForgotPasswordStep", "step2");
+                            ViewBag.Email = Email;
+                            HttpContext.Session.SetString("AccountId", GetAccountIdByEmail(Email));
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Gửi email thất bại vui lòng thử lại sau.";
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Email không hợp lệ.";
+                    }
+                }
+            }
+            else if (step.Equals("step2"))
+            {
+                string verifyCode = HttpContext.Session.GetString("VerifyCode");
+                if (verifyCode.Equals(VerifyCode))
+                {
+                    HttpContext.Session.SetString("ForgotPasswordStep", "step3");
+                }
+                else
+                {
+                    ViewBag.Message = "Mã xác minh chưa chính xác vui lòng thử lại";
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(RePassword))
+                {
+                    ViewBag.Message = "Vui lòng nhập đầy đủ tất cả các trường.";
+                }
+                if (!Password.Equals(RePassword))
+                {
+                    ViewBag.Message = "Mật khẩu nhập lại và mật khẩu không giống nhau.";
+                }
+                else
+                {
+                    bool success = AccountLogic.ChangePassword(HttpContext.Session.GetString("AccountId"), Util.EncodePassword(Password));
+                    if (success)
+                    {
+                        ViewBag.Message = "Đổi mật khẩu thành công. Đến trang đăng nhập sau 3 giây";
+                        ViewBag.Success = true;
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Đổi mật khẩu thất bại.";
+                    }
+                }
+            }
+            return View("ForgotPassword");
         }
     }
 }
