@@ -29,6 +29,18 @@ namespace MusicStream.Controllers.Logic
             return albums;
         }
 
+        public static Album GetAlbumDetails(string id, string accountId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Albums.Include(a => a.Tracks).ThenInclude(a => a.ArtistTracks).ThenInclude(a => a.Artist)
+                    .Include(a => a.Tracks).ThenInclude(a => a.LikeTracks.Where(lt => lt.AccountId == accountId))
+                    .Include(a => a.ArtistAlbums).ThenInclude(a => a.Artist)
+                    .Include(a => a.Comments).ThenInclude(a => a.Account)
+                    .FirstOrDefault(a => a.AlbumId == id);
+            }
+        }
+
         public static Album GetAlbumDetails(string id)
         {
             using (var context = new MusicStreamingContext())

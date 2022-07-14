@@ -13,7 +13,7 @@ namespace MusicStream.Controllers
         {
             Artist artist = GetArtistByID(id);
             if (artist == null)
-                return NotFound();
+                return Redirect("/error");
             List<Artist> artists = GetFeatureArtists();
             List<Album> albums = GetAlbumByArtistId(id);
             ViewData["albums"] = albums;

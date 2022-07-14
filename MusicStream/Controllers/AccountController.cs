@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,11 @@ namespace MusicStream.Controllers
     [Route("account")]
     public class AccountController : Controller
     {
-
+        private readonly IWebHostEnvironment webHostEnvironment;
+        public AccountController(IWebHostEnvironment hostEnvironment)
+        {
+            webHostEnvironment = hostEnvironment;
+        }
 
         [Route("google-signup")]
         public IActionResult GoogleSignup()
@@ -97,7 +102,7 @@ namespace MusicStream.Controllers
             string id = claims.ElementAt(0).Value;
             string name = claims.ElementAt(1).Value;
             string email = claims.ElementAt(4).Value;
-            if (!IsIdExist(id) || !IsEmailAlreadyInUse(email))
+            if (!IsIdExist(id) && !IsEmailAlreadyInUse(email))
             {
                 Account account = new Account();
                 account.AccountId = id;
@@ -136,7 +141,7 @@ namespace MusicStream.Controllers
             Account account = Util.CheckLogged(HttpContext, Request);
             if (account == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
             List<Track> tracksList = GetFavouriteListTrack(account.AccountId);
 
@@ -225,6 +230,116 @@ namespace MusicStream.Controllers
                 }
             }
             return View("ForgotPassword");
+        }
+
+        [Route("profile")]
+        public IActionResult Profile()
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return Redirect("/error");
+            }
+            if (string.IsNullOrEmpty(account.Password))
+            {
+                ViewBag.ThirdParty = true;
+            }
+            return View("Profile", account);
+        }
+
+        [Route("changeusername"), HttpPut]
+        public string ChangeUsername(string name)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return JsonConvert.SerializeObject(new Models.Action("changeusername", false));
+            }
+            bool success = AccountLogic.ChangeUsername(account, name);
+            if (success)
+            {
+                account.Fullname = name;
+                HttpContext.Session.SetString("account", JsonConvert.SerializeObject(account));
+            }
+            return JsonConvert.SerializeObject(new Models.Action("changeusername", success));
+        }
+
+        [Route("changepassword"), HttpPut]
+        public string ChangePassword(string oldpass, string newpass)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return JsonConvert.SerializeObject(new Models.Action("changepass", false));
+            }
+
+            Account tempAcc = AccountLogic.SignIn(account.Email, oldpass);
+            if (tempAcc != null)
+            {
+                bool success = AccountLogic.ChangePassword(account.AccountId, newpass);
+                return JsonConvert.SerializeObject(new Models.Action("changepass", success));
+            }
+            else
+            {
+                return JsonConvert.SerializeObject(new Models.Action("changepass", false, "Mật khẩu không chính xác."));
+            }
+        }
+
+        [Route("setpassword"), HttpPut]
+        public string SetPassword(string newpass)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return JsonConvert.SerializeObject(new Models.Action("setpass", false));
+            }
+
+            if (string.IsNullOrEmpty(account.Password))
+            {
+                bool success = AccountLogic.ChangePassword(account.AccountId, Util.EncodePassword(newpass));
+                return JsonConvert.SerializeObject(new Models.Action("setpass", success));
+            }
+            else
+            {
+                return JsonConvert.SerializeObject(new Models.Action("setpass", false));
+            }
+        }
+
+        [HttpPost, Route("changeavatar")]
+        public async Task<ActionResult> ChangeAvatar(IFormFile file)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null)
+            {
+                return Redirect("/error");
+            }
+            string extension = file.ContentType.ToLower().Split("/")[1];
+            extension = extension.Equals("jpeg") ? "jpg" : extension;
+            if (file != null)
+            {
+                if (account.Image.Contains("avatar.jpg"))
+                {
+                    await Util.UploadedFile(file, webHostEnvironment, $"{account.AccountId}.{extension}", "img/avatar/");
+                    HttpContext.Session.SetString("edit", "success");
+                    AccountLogic.ChangeUserAvatar(account, $"/img/avatar/{account.AccountId}.{extension}");
+                }
+                else
+                {
+                    bool deleteSuccess = Util.DeleteFile(webHostEnvironment, account.Image.Split("/")[3], "img/avatar/");
+                    if (deleteSuccess)
+                    {
+                        await Util.UploadedFile(file, webHostEnvironment, $"{account.AccountId}.{extension}", "img/avatar/");
+                        HttpContext.Session.SetString("edit", "success");
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("edit", "failed");
+                    }
+                }
+            }
+            account = Util.CheckLogged(HttpContext, Request);
+            HttpContext.Session.SetString("account", JsonConvert.SerializeObject(account));
+            return Redirect("/account/profile");
         }
     }
 }

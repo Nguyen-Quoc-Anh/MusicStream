@@ -15,12 +15,12 @@ namespace MusicStream.Controllers
             Account account = Util.CheckLogged(HttpContext, Request);
             if (account == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
-            Album album = AlbumLogic.GetAlbumDetails(Id);
+            Album album = AlbumLogic.GetAlbumDetails(Id, account.AccountId);
             if (album == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
             string commentId = Util.RandomString(20);
             while (CommentLogic.CheckCommentExistById(commentId))
@@ -45,12 +45,12 @@ namespace MusicStream.Controllers
             Account account = Util.CheckLogged(HttpContext, Request);
             if (account == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
-            Album album = AlbumLogic.GetAlbumDetails(Id);
+            Album album = AlbumLogic.GetAlbumDetails(Id, account.AccountId);
             if (album == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
             if (CommentLogic.CheckCommentExistById(commentId))
             {
@@ -63,7 +63,7 @@ namespace MusicStream.Controllers
                 {
                     HttpContext.Session.SetString("editcomment", "failed");
                 }
-            } 
+            }
             else
             {
                 HttpContext.Session.SetString("editcomment", "failed");

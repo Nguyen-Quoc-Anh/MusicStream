@@ -83,5 +83,34 @@ namespace MusicStream.Controllers.Logic
                 return context.Accounts.FirstOrDefault(a => a.Email == Email).AccountId;
             }
         }
+
+        public static bool ChangeUsername(Account account, string name)
+        {
+            try
+            {
+                using (var context = new MusicStreamingContext())
+                {
+                    account.Fullname = name;
+                    context.Accounts.Update(account);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
+
+        public static void ChangeUserAvatar(Account account, string imgPath)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                account.Image = imgPath;
+                context.Accounts.Update(account);
+                context.SaveChanges();
+            }
+        }
     }
 }

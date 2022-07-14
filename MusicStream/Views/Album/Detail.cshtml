@@ -108,14 +108,47 @@
                                     }
                                     else
                                     {
-                                        <button href="" class="single-item__add" id="addtofavourite"
+                                        @if (item.LikeTracks.Count == 0)
+                                        {
+                                            <button href="" class="single-item__add" id="addtofavourite-@item.TrackId"
                                         style="background-color: rgba(255, 112, 77,0.15); " onclick="addToFavourite('@item.TrackId')">
-                                            <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
+                                                <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
                                          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
                                          clip-rule="evenodd">
-                                                <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.191 0 4.661 5.571 9.429 12 15.809 6.43-6.38 12-11.148 12-15.809 0-4.011-3.095-6.181-6.274-6.181" />
-                                            </svg>
-                                        </button>
+                                                    <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.191 0 4.661 5.571 9.429 12 15.809 6.43-6.38 12-11.148 12-15.809 0-4.011-3.095-6.181-6.274-6.181" />
+
+                                                </svg>
+                                            </button>
+                                            <button class="single-item__add" id="removefromfavourite-@item.TrackId"
+                                        style="background-color: rgba(255, 112, 77,0.15); display: none" onclick="removefromfavourite('@item.TrackId')">
+                                                <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
+                                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
+                                         clip-rule="evenodd">
+                                                    <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button href="" class="single-item__add" id="addtofavourite-@item.TrackId"
+                                        style="background-color: rgba(255, 112, 77,0.15);  display: none" onclick="addToFavourite('@item.TrackId')">
+                                                <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
+                                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
+                                         clip-rule="evenodd">
+                                                    <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402m5.726-20.583c-2.203 0-4.446 1.042-5.726 3.238-1.285-2.206-3.522-3.248-5.719-3.248-3.183 0-6.281 2.187-6.281 6.191 0 4.661 5.571 9.429 12 15.809 6.43-6.38 12-11.148 12-15.809 0-4.011-3.095-6.181-6.274-6.181" />
+
+                                                </svg>
+                                            </button>
+                                            <button href="" class="single-item__add" id="removefromfavourite-@item.TrackId"
+                                        style="background-color: rgba(255, 112, 77,0.15); " onclick="removefromfavourite('@item.TrackId')">
+                                                <svg style="fill: #ff0000; width: 18px; height: 18px;" width="18" height="18"
+                                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
+                                         clip-rule="evenodd">
+                                                    <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
+                                                </svg>
+                                            </button>
+                                        }
+
                                         <button href="" class="single-item__add" onclick="openPlaylist('@item.TrackId')">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                                 <path d="M19,11H13V5a1,1,0,0,0-2,0v6H5a1,1,0,0,0,0,2h6v6a1,1,0,0,0,2,0V13h6a1,1,0,0,0,0-2Z" />
@@ -135,7 +168,7 @@
                                          version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 24 24"
                                          style="enable-background:new 0 0 230 230;" xml:space="preserve">
                                         <path d="M213.588,120.982L115,213.445l-98.588-92.463C-6.537,96.466-5.26,57.99,19.248,35.047l2.227-2.083  c24.51-22.942,62.984-21.674,85.934,2.842L115,43.709l7.592-7.903c22.949-24.516,61.424-25.784,85.936-2.842l2.227,2.083  C235.26,57.99,236.537,96.466,213.588,120.982z" />
-                                                                                                                                        </svg>
+                                                                                                                                                            </svg>
                                     </a>
                                     <span class="single-item__time">@TimeSpan.FromSeconds(Convert.ToDouble(item.Duration)).ToString(@"mm\:ss")</span>
                                 </li>
@@ -556,12 +589,30 @@
         $.get(`/Track/LikeTrack/${id}`, function (data, err) {
             data = JSON.parse(data);
             if (data["Success"]) {
-                $("#info2").click();
+                //$("#info2").click();
+                $(`#addtofavourite-${id}`).hide();
+                $(`#removefromfavourite-${id}`).show();
             } else {
                 console.log("s")
-                $("#if3").click();
+                //$("#if3").click();
             }
         });
+    }
+
+    function removefromfavourite(trackId) {
+        $.ajax({
+                url: `/Track/UnLikeTrack/${trackId}`,
+                type: 'DELETE',
+                success: function(result) {
+                    result = JSON.parse(result);
+                    console.log(result)
+                    if (result["Success"])
+                    {
+                        $(`#removefromfavourite-${trackId}`).hide();
+                        $(`#addtofavourite-${trackId}`).show();
+                    }
+                }
+       });
     }
 
     function openPlaylist(trackId) {

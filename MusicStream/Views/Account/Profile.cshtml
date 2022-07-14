@@ -1,0 +1,359 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@inject IHttpContextAccessor Accessor
+@using Microsoft.AspNetCore.Http
+@model MusicStream.Models.Account
+<!-- main content -->
+<main class="main">
+    <div class="container-fluid">
+        <div class="row row--grid">
+            <!-- breadcrumb -->
+            <div class="col-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Profile</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb -->
+            <!-- title -->
+            <div class="col-12">
+                <div class="main__title main__title--page">
+                    <h1>Profile</h1>
+                </div>
+            </div>
+            <!-- end title -->
+        </div>
+
+        <div class="row row--grid">
+            <div class="col-12">
+                <div class="profile">
+                    <div class="profile__user">
+                        <div class="profile__avatar">
+                            <img src="@Model.Image" alt="">
+                        </div>
+                        <div class="profile__meta">
+                            <h3>@Model.Fullname</h3>
+                        </div>
+                    </div>
+
+                    <!-- tabs nav -->
+                    <ul class="nav nav-tabs profile__tabs" id="profile__tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab-1" aria-selected="true">Profile</a>
+                        </li>
+                        @if (ViewBag.ThirdParty != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab-2" aria-selected="false">Đặt mật khẩu</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab-2" aria-selected="false">Đổi mật khẩu</a>
+                            </li>
+                        }
+                    </ul>
+                    <!-- end tabs nav -->
+
+                    <button href="#img-modal" class="profile__logout open-modal" type="button">
+                        <span>Đổi ảnh đại diện</span>
+                    </button>
+                </div>
+
+                <!-- content tabs -->
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
+                        <div class="row row--grid">
+                            <!-- details form -->
+                            <div class="col-10">
+                                <form class="sign__form sign__form--profile">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h4 class="sign__title">Thông tin chi tiết</h4>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="sign__group">
+                                                <label class="sign__label" for="email">Email</label>
+                                                <input id="email" type="text" name="email" class="sign__input" value="@Model.Email" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class="sign__group">
+                                                <label class="sign__label" for="firstname">Tên</label>
+                                                <input id="name" type="text" name="name" class="sign__input" value="@Model.Fullname" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button class="sign__btn" onclick="changeUsername()" type="button">Lưu</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- end details form -->
+                        </div>
+                    </div>
+
+                    @if (ViewBag.ThirdParty == null)
+                    {
+                        <div class="tab-pane fade show" id="tab-2" role="tabpanel">
+                            <div class="row row--grid">
+                                <!-- password form -->
+                            <div class="col-10">
+                                    <form class="sign__form sign__form--profile">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="sign__title">Đổi mật khẩu</h4>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="sign__group">
+                                                    <label class="sign__label" for="oldpass">Mật khẩu cũ</label>
+                                                    <input id="oldpass" type="password" name="oldpass" class="sign__input" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="sign__group">
+                                                    <label class="sign__label" for="newpass">Mật khẩu mới</label>
+                                                    <input id="newpass" type="password" name="newpass" class="sign__input" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 ">
+                                                <div class="sign__group">
+                                                    <label class="sign__label" for="confirmpass">Nhập lại mật khẩu mới</label>
+                                                    <input id="confirmpass" type="password" name="confirmpass" class="sign__input" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 ">
+                                                <div class="sign__group">
+                                                    <p style="color: white" id="warning-message"></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <button class="sign__btn" onclick="changePassword()" type="button">Lưu thay đổi</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- end password form -->
+                        </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="tab-pane fade show" id="tab-2" role="tabpanel">
+                            <div class="row row--grid">
+                                <!-- password form -->
+                            <div class="col-10">
+                                    <form class="sign__form sign__form--profile">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="sign__title">Đặt mật khẩu</h4>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="sign__group">
+                                                    <label class="sign__label" for="newpass">Mật khẩu mới</label>
+                                                    <input id="newpass" type="password" name="newpass" class="sign__input" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 ">
+                                                <div class="sign__group">
+                                                    <label class="sign__label" for="confirmpass">Nhập lại mật khẩu mới</label>
+                                                    <input id="confirmpass" type="password" name="confirmpass" class="sign__input" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 ">
+                                                <div class="sign__group">
+                                                    <p style="color: white" id="warning-message"></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <button class="sign__btn" onclick="setPassword()" type="button">Lưu thay đổi</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- end password form -->
+                        </div>
+                        </div>
+                    }
+
+                </div>
+                <!-- end content tabs -->
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="img-modal" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Đổi ảnh đại diện
+    </h2>
+    <div class="row">
+        <form enctype="multipart/form-data" action="/account/changeavatar" method="post" class="sign__form sign__form--contacts">
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <img id="playlist--img" src="@Model.Image" style="width: 200px; height: auto; border-radius: 20px;" />
+                </div>
+                <div class="col-12">
+                    <label for="file-upload123" class="custom-file-upload">
+                        <input id="file-upload123" type="file" name="file" />
+                        <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24" viewBox="0 0 24 24"><path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" /></svg>
+                        Tải ảnh lên
+                    </label>
+                </div>
+                <div class="col-12 col-xl-5">
+                    <button type="submit" class="sign__btn">Chỉnh sửa</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-info13" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title" id="sign__title"></h4>
+</div>
+<div id="modal-info2" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Đổi ảnh đại diện thành công</h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-info3" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
+
+    <h4 class="sign__title">Đổi ảnh đại diện thất bại</h4>
+</div>
+<div style="display: none">
+    <a href="#modal-info3" id="if3" class="open-modal">Modal failed</a>
+    <a href="#modal-info2" id="if2" class="open-modal">Modal success</a>
+    <a href="#modal-info13" id="if13" class="open-modal">Modal success</a>
+</div>
+<!-- end main content -->
+@section Scripts {
+<script>
+    function changePassword() {
+        let oldpass = $('#oldpass')[0].value.trim();
+        let newpass = $('#newpass')[0].value.trim();
+        let confirmpass = $('#confirmpass')[0].value.trim();
+        if (oldpass && newpass && confirmpass) {
+            if (newpass !== confirmpass) {
+                $("#warning-message")[0].innerHTML = "Mật khẩu và mật khẩu nhập lại phải giống nhau."
+            } else {
+                $("#warning-message")[0].innerHTML = "";
+                $.ajax({
+                    url: `/account/changepassword?oldpass=${oldpass}&newpass=${newpass}`,
+                    type: 'PUT',
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        console.log(result)
+                        if (result["Success"])
+                        {
+                            $("#sign__title")[0].innerHTML = result["Message"] ? result["Message"] : "Đổi mật khẩu thành công."
+                        } else {
+                            $("#sign__title")[0].innerHTML = result["Message"] ? result["Message"] : "Đổi mật khẩu bại."
+                        }
+                        $(`#if13`).click();
+                    }
+                });
+            }
+        } else {
+            $("#warning-message")[0].innerHTML = "Vui lòng điền đầy đủ tất cả các trường."
+        }
+    }
+
+    function setPassword() {
+        let newpass = $('#newpass')[0].value.trim();
+        let confirmpass = $('#confirmpass')[0].value.trim();
+        if (newpass && confirmpass) {
+            if (newpass !== confirmpass) {
+                $("#warning-message")[0].innerHTML = "Mật khẩu và mật khẩu nhập lại phải giống nhau."
+            } else {
+                $("#warning-message")[0].innerHTML = "";
+                $.ajax({
+                    url: `/account/setpassword?newpass=${newpass}`,
+                    type: 'PUT',
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        console.log(result)
+                        if (result["Success"])
+                        {
+                            $("#sign__title")[0].innerHTML = result["Message"] ? result["Message"] : "Đặt mật khẩu thành công."
+                        } else {
+                            $("#sign__title")[0].innerHTML = result["Message"] ? result["Message"] : "Đặt mật khẩu bại."
+                        }
+                        $(`#if13`).click();
+                    }
+                });
+            }
+        } else {
+            $("#warning-message")[0].innerHTML = "Vui lòng điền đầy đủ tất cả các trường."
+        }
+    }
+
+
+    function changeUsername() {
+            let name = $('#name')[0].value;
+            if (name) {
+                $.ajax({
+                    url: `/account/changeusername?name=${name}`,
+                    type: 'PUT',
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        console.log(result)
+                        if (result["Success"])
+                        {
+                            $("#sign__title")[0].innerHTML = result["Message"] ? result["Message"] : "Đổi tên thành công."
+                        } else {
+                            $("#sign__title")[0].innerHTML = result["Message"] ? result["Message"] : "Đổi tên thất bại."
+                        }
+                        $(`#if13`).click();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2500)
+                    }
+                });
+            }
+    }
+
+    function openMessageModalSuccess() {
+        $('#if2').click();
+    }
+
+    function openMessageModalFailed() {
+        $('#if3').click();
+    }
+    $( document ).ready(function() {
+        $('#file-upload123').change(() => {
+            var img = $('#file-upload123')["0"].files["0"]
+            $("#playlist--img").attr("src", URL.createObjectURL(img));
+        });
+        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("edit")) ? "" : Accessor.HttpContext.Session.GetString("edit").Equals("success") ? "openMessageModalSuccess()" : "openMessageModalFailed()")
+    });
+    @{
+        Accessor.HttpContext.Session.Remove("edit");
+    }
+
+</script>
+}

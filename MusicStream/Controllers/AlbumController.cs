@@ -12,13 +12,13 @@ namespace MusicStream.Controllers
     {
         public IActionResult Detail(string id)
         {
-            Album album = GetAlbumDetails(id);
+            Account account = Util.CheckLogged(HttpContext, Request);
+            Album album = account == null ? GetAlbumDetails(id) : GetAlbumDetails(id, account.AccountId);
             if (album == null)
             {
                 return NotFound();
             }
             Dictionary<Album, List<Artist>> recommendAlbum = GetRandomAlbum(6);
-            Account account = Util.CheckLogged(HttpContext, Request);
             if (account != null)
             {
                 ViewData["playLists"] = PlayListLogic.GetAllPlayListByAccountId(account.AccountId);

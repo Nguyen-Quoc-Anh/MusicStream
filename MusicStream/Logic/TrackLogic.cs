@@ -146,6 +146,26 @@ namespace MusicStream.Controllers.Logic
             }
         }
 
+        public static bool UnLikeTrack(string accountId, string trackId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    LikeTrack like = new LikeTrack();
+                    like.AccountId = accountId;
+                    like.TrackId = trackId;
+                    context.LikeTracks.Remove(like);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
         public static bool CheckAccountLikedTrack(string accountId, string trackId)
         {
             using (var context = new MusicStreamingContext())

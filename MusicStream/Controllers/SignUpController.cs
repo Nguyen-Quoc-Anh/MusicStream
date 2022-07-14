@@ -69,7 +69,7 @@ namespace MusicStream.Controllers
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("SignUp")) || !HttpContext.Session.GetString("SignUp").Equals("step2"))
             {
-                return NotFound();
+                return Redirect("/error");
             }
             if (HttpContext.Session.GetString("VerificationCode") != null && VerifyCode.Equals(HttpContext.Session.GetString("VerificationCode")))
             {

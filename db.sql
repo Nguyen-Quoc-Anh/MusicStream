@@ -105,3 +105,5 @@ create table PlayListFollow (
 
 insert into Role (name) values (N'Admin'), (N'User')
 
+insert into Account(accountID, email, password, roleID, fullname, image) values ('adminAccount', 'admin@gmail.com', '42-97-F4-4B-13-95-52-35-24-5B-24-97-39-9D-7A-93', 1, 'Admin', N'/img/avatar/avatar.jpg')
+

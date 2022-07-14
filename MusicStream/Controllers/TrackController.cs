@@ -12,6 +12,7 @@ namespace MusicStream.Controllers
         {
             return View("List");
         }
+
         public string LikeTrack(string Id)
         {
             Account account = Util.CheckLogged(HttpContext, Request);
@@ -20,6 +21,21 @@ namespace MusicStream.Controllers
                 return JsonConvert.SerializeObject(new Action("like", false));
             }
             if (TrackLogic.LikeTrack(account.AccountId, Id))
+            {
+                return JsonConvert.SerializeObject(new Action("like", true));
+            }
+            return JsonConvert.SerializeObject(new Action("like", false));
+        }
+
+        [HttpDelete]
+        public string UnLikeTrack(string Id)
+        {
+            Account account = Util.CheckLogged(HttpContext, Request);
+            if (account == null || !TrackLogic.CheckAccountLikedTrack(account.AccountId, Id))
+            {
+                return JsonConvert.SerializeObject(new Action("unlike", false));
+            }
+            if (TrackLogic.UnLikeTrack(account.AccountId, Id))
             {
                 return JsonConvert.SerializeObject(new Action("like", true));
             }

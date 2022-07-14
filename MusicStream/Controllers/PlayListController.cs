@@ -26,7 +26,7 @@ namespace MusicStream.Controllers
             Account account = Util.CheckLogged(HttpContext, Request);
             if (account == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
             if (page < 1)
             {
@@ -42,17 +42,17 @@ namespace MusicStream.Controllers
 
         public IActionResult Detail(string id)
         {
-            Playlist playlist = PlayListLogic.GetPlaylistById(id);
             Account account = Util.CheckLogged(HttpContext, Request);
+            Playlist playlist = account == null ? PlayListLogic.GetPlaylistById(id) : PlayListLogic.GetPlaylistById(id, account.AccountId);
             if (playlist == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
             if (Convert.ToBoolean(playlist.IsPrivate))
             {
                 if (account.AccountId != playlist.AccountId)
                 {
-                    return NotFound();
+                    return Redirect("/error");
                 }
             }
             if (account != null)
@@ -131,7 +131,7 @@ namespace MusicStream.Controllers
             Account account = Util.CheckLogged(HttpContext, Request);
             if (account == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
             string playListId = Util.RandomString(20);
             while (true)
@@ -150,7 +150,7 @@ namespace MusicStream.Controllers
             {
                 string extension = file.ContentType.ToLower().Split("/")[1];
                 extension = extension.Equals("jpeg") ? "jpg" : extension;
-                imageUrl = await Util.UploadedFile(file, webHostEnvironment, playListId + "." + extension);
+                imageUrl = await Util.UploadedFile(file, webHostEnvironment, playListId + "." + extension, "img/playlist/");
             }
             else
             {
@@ -188,13 +188,28 @@ namespace MusicStream.Controllers
                 return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", false));
             }
             Playlist playlist = PlayListLogic.GetPlaylistById(Id);
-            if (account.AccountId != playlist.AccountId)
+            if (playlist.Image.Contains("index.jpg"))
             {
-                return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", false));
+                if (account.AccountId != playlist.AccountId)
+                {
+                    return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", false));
+                }
+
+                bool success = await PlayListLogic.DeletePlayListById(Id);
+                return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", success));
+            }
+            else
+            {
+                bool deleteSuccess = Util.DeleteFile(webHostEnvironment, playlist.Image.Split("/")[3], "img/playlist/");
+                if (account.AccountId != playlist.AccountId || !deleteSuccess)
+                {
+                    return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", false));
+                }
+
+                bool success = await PlayListLogic.DeletePlayListById(Id);
+                return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", success));
             }
 
-            bool success = await PlayListLogic.DeletePlayListById(Id);
-            return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", success));
         }
 
         public IActionResult Search(string name, int page, string sort)
@@ -257,7 +272,7 @@ namespace MusicStream.Controllers
             Account account = Util.CheckLogged(HttpContext, Request);
             if (account == null)
             {
-                return NotFound();
+                return Redirect("/error");
             }
 
             if (PlayListLogic.CheckPlayListIdIsExist(playlistId))
@@ -270,15 +285,27 @@ namespace MusicStream.Controllers
                 playlist.IsPrivate = isPrivate != null;
                 if (file != null)
                 {
-                    bool deleteSuccess = Util.DeleteFile(webHostEnvironment, playlist.Image.Split("/")[3]);
-                    if (deleteSuccess)
+                    string extension = file.ContentType.ToLower().Split("/")[1];
+                    extension = extension.Equals("jpeg") ? "jpg" : extension;
+                    if (playlist.Image.Contains("index.jpg"))
                     {
-                        await Util.UploadedFile(file, webHostEnvironment, playlist.Image.Split("/")[3]);
+                        await Util.UploadedFile(file, webHostEnvironment, $"{playlistId}.{extension}", "img/playlist/");
+                        playlist.Image = $"/img/playlist/{playlistId}.{extension}";
                     }
                     else
                     {
-                        HttpContext.Session.SetString("edit", "failed");
+                        bool deleteSuccess = Util.DeleteFile(webHostEnvironment, playlist.Image.Split("/")[3], "img/playlist/");
+                        if (deleteSuccess)
+                        {
+                            await Util.UploadedFile(file, webHostEnvironment, $"{playlistId}.{extension}", "img/playlist/");
+                        }
+                        else
+                        {
+                            HttpContext.Session.SetString("edit", "failed");
+                            return Redirect($"/playlist/detail/{playlistId}");
+                        }
                     }
+
                 }
                 bool updateSuccess = PlayListLogic.EditPlaylist(playlist);
                 if (updateSuccess)

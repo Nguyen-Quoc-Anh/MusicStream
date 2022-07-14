@@ -99,26 +99,26 @@ namespace MusicStream.Logic
             return JsonConvert.DeserializeObject<Account>(context.Session.GetString("account"));
         }
 
-        public static async Task<string> UploadedFile(IFormFile model, IWebHostEnvironment webHostEnvironment, string fileName)
+        public static async Task<string> UploadedFile(IFormFile model, IWebHostEnvironment webHostEnvironment, string fileName, string fp)
         {
             if (model != null)
-            {
-                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "img/playlist/");
+            {//""
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, fp);
                 string filePath = Path.Combine(uploadsFolder, fileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await model.CopyToAsync(fileStream);
-                    return $"/img/playlist/{fileName}";
+                    return $"/{fp}{fileName}";
                 }
             }
             return null;
         }
 
-        public static bool DeleteFile(IWebHostEnvironment webHostEnvironment, string fileName)
+        public static bool DeleteFile(IWebHostEnvironment webHostEnvironment, string fileName, string fp)
         {
             try
             {
-                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "img/playlist/");
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, fp);
                 string filePath = Path.Combine(uploadsFolder, fileName);
                 File.Delete(filePath);
                 return true;

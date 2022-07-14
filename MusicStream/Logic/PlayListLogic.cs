@@ -88,6 +88,18 @@ namespace MusicStream.Logic
             }
         }
 
+        public static Playlist GetPlaylistById(string Id, string accountId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Playlists.Include(p => p.PlayListTracks)
+                    .ThenInclude(t => t.Track).ThenInclude(t => t.ArtistTracks)
+                    .ThenInclude(t => t.Artist).Include(p => p.PlayListFollows)
+                    .Include(t => t.PlayListTracks).ThenInclude(t => t.Track).ThenInclude(t => t.LikeTracks.Where(pl => pl.AccountId == accountId))
+                    .FirstOrDefault(p => p.PlaylistId == Id && p.IsPrivate == false);
+            }
+        }
+
         public static bool AddNewPlayList(Playlist playlist)
         {
             using (var context = new MusicStreamingContext())
