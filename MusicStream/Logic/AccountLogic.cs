@@ -1,9 +1,8 @@
 ﻿using MusicStream.Logic;
 using MusicStream.Models;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 
 namespace MusicStream.Controllers.Logic
 {
@@ -110,6 +109,69 @@ namespace MusicStream.Controllers.Logic
                 account.Image = imgPath;
                 context.Accounts.Update(account);
                 context.SaveChanges();
+            }
+        }
+
+        public static List<Account> GetAllAccounts()
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Accounts.ToList();
+            }
+        }
+
+        public static bool ActiveAccount(string accountId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    var account = context.Accounts.FirstOrDefault(a => a.AccountId == accountId);
+                    account.Status = true;
+                    context.Accounts.Update(account);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool InactiveAccount(string accountId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    var account = context.Accounts.FirstOrDefault(a => a.AccountId == accountId);
+                    account.Status = false;
+                    context.Accounts.Update(account);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool InsertAccount(Account account)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.Accounts.Add(account);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
     }

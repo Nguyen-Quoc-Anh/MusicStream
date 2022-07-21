@@ -21,6 +21,7 @@ namespace MusicStream.Models
         public int? RoleId { get; set; }
         public string Fullname { get; set; }
         public string Image { get; set; }
+        public bool? Status { get; set; }
 
         public virtual Role Role { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }

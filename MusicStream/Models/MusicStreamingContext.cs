@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 #nullable disable
@@ -75,6 +73,10 @@ namespace MusicStream.Models
                     .HasColumnName("password");
 
                 entity.Property(e => e.RoleId).HasColumnName("roleID");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)

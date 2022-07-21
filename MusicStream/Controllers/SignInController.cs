@@ -23,6 +23,10 @@ namespace MusicStream.Controllers
             Account account = AccountLogic.SignIn(Email, Password);
             if (account != null)
             {
+                if (!Convert.ToBoolean(account.Status))
+                {
+                    ViewData["Message"] = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên để biết thêm chi tiết.";
+                }
                 if (Remember != null)
                 {
                     CookieOptions cookie = new CookieOptions();

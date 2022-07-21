@@ -3,3 +3,360 @@
 *@
 @{
 }
+@inject IHttpContextAccessor Accessor
+@using Microsoft.AspNetCore.Http
+@model X.PagedList.IPagedList<MusicStream.Models.Account>
+@using X.PagedList.Mvc.Core
+<main class="main">
+    <div class="container-fluid">
+        <div class="row row--grid">
+            <!-- breadcrumb -->
+            <div class="col-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Quản lí tài khoản</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb -->
+            <div class="col-12">
+                <div class="main__filter">
+                    <form action="/admin/account" class="main__filter-search">
+                        <input type="text" name="search" placeholder="Search..." value="@ViewBag.Search">
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!-- title -->
+            <div class="col-12">
+                <div class="main__title main__title--page">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h1>Tài khoản</h1>
+                        </div>
+                        <div class="col-md-3">
+                            <h5 style="color: #fff" onclick="createaccountModal()">
+                                <i class="fa-solid fa-plus"></i> Tạo thêm một tài khoản mới
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end title -->
+        </div>
+
+
+        <div class="dashbox">
+            <div class="dashbox__table-wrap">
+                <div class="dashbox__table-scroll">
+                    <table class="main__table">
+                        <thead>
+                            <tr>
+                                <th><a href="#">Email</a></th>
+                                <th><a href="#">Tên</a></th>
+                                <th><a href="#">Ảnh</a></th>
+                                <th><a href="#">Trạng thái</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="main__table-text">@item.Email</div>
+                                    </td>
+                                    <td>
+                                        <div class="main__table-text">@item.Fullname</div>
+                                    </td>
+                                    <td>
+                                        <img src="@item.Image" style="border-radius: 20px; width: 100px;">
+                                        <div class="main__table-text"></div>
+                                    </td>
+                                    <td>
+                                        @if (Convert.ToBoolean(item.Status))
+                                        {
+                                            <span class="badge badge-success"
+                                        onclick="activeAccountModal('@item.AccountId' , '@item.Fullname')"
+                                        id="active-status-@item.AccountId">Active</span>
+                                            <span class="badge badge-danger"
+                                        onclick="inActiveAccountModal('@item.AccountId' , '@item.Fullname')"
+                                        style="display: none;" id="inactive-status-@item.AccountId">Inactive</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success"
+                                        onclick="activeAccountModal('@item.AccountId' , '@item.Fullname')"
+                                        style="display: none;" id="active-status-@item.AccountId">Active</span>
+                                            <span class="badge badge-danger"
+                                        onclick="inActiveAccountModal('@item.AccountId' , '@item.Fullname')"
+                                        id="inactive-status-@item.AccountId">Inactive</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @Html.PagedListPager(Model, page => Url.Action("account", new { page, search = ViewBag.Search}))
+    </div>
+</main>
+<div id="modal-add-account" class="zoom-anim-dialog mfp-hide modal modal-lg modal--info">
+    <h2 class="id-target" style="color: white">
+        Thêm account mới
+    </h2>
+    <div class="row">
+        <form enctype="multipart/form-data" id="form-add-account" method="post" action="/admin/addaccount"
+            class="sign__form sign__form--contacts">
+            <div class="row w-100">
+                <div class="col-12 col-md-12">
+                    <div class="sign__group w-100">
+                        <label class="sign__label" for="account-email">Email</label>
+                        <input type="text" name="email" id="account-email" class="sign__input" placeholder="Email">
+                    </div>
+                </div>
+                <div class="col-12 col-md-12">
+                    <div class="sign__group w-100">
+                        <label class="sign__label" for="account-name">Tên</label>
+                        <input type="text" name="name" id="account-name" class="sign__input" placeholder="Tên">
+                    </div>
+                </div>
+                <div class="col-12 col-md-12">
+                    <div class="sign__group w-100">
+                        <label class="sign__label" for="account-pass">Mật khẩu</label>
+                        <input type="text" name="password" id="account-pass" class="sign__input" placeholder="Mật khẩu">
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <img id="account--img--add"
+                        style="width: 300px; height: auto; border-radius: 20px; display: none;" />
+                </div>
+                <div class="col-12">
+                    <label for="file-upload123" class="custom-file-upload">
+                        <input id="file-upload123" type="file" name="file" />
+                        <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
+                        </svg>
+                        Tải ảnh lên
+                    </label>
+                </div>
+                <div class="col-12 col-md-12">
+                    <button type="button" onclick="addaccount()" class="sign__btn w-100">Tạo</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-inactive-account" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Inactive tài khoản
+    </h2>
+    <div class="row">
+        <div class="row">
+            <div class="col-12">
+                <div class="sign__group ml-3">
+                    <p id="inactive-mess" class="text-white"></p>
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-danger w-100" onclick="inActiveAccount()">Inactive</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-active-account" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Active tài khoản
+    </h2>
+    <div class="row">
+        <div class="row">
+            <div class="col-12">
+                <div class="sign__group ml-3">
+                    <p id="active-mess" class="text-white"></p>
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-success w-100" onclick="activeAccount()">Active</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display: none">
+    <a href="#modal-add-account" id="add-account" class="open-modal">Modal add</a>
+    <a href="#modal-inactive-account" id="inactive-account" class="open-modal">Modal inactive</a>
+    <a href="#modal-active-account" id="active-account" class="open-modal">Modal Active</a>
+
+    <a href="#modal-action-sucess" id="action--sucess" class="open-modal">Modal success</a>
+    <a href="#modal-action-failed" id="action--failed" class="open-modal">Modal failed</a>
+</div>
+
+<div id="modal-action-sucess" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green mt-3 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z">
+            </path>
+        </svg>
+    </span>
+
+    <button class="modal__close" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg>
+    </button>
+
+    <h4 class="sign__title" id="success--title"></h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-action-failed" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red mt-3 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z">
+            </path>
+        </svg>
+    </span>
+
+    <button class="modal__close" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg>
+    </button>
+
+    <h4 class="sign__title" id="failed--title"></h4>
+</div>
+@section Scripts {
+
+<script>
+    let aid;
+
+    function createaccountModal() {
+        $('#add-account').click();
+    }
+
+    function addaccount() {
+        let name = $('#account-name').val();
+        let email = $('#account-email').val();
+        let password = $('#account-pass').val();
+        let mess = "";
+        if (name == '') {
+            mess += 'Tên account không được để trống. ';
+        }
+        if (email == '') {
+            mess += 'Email không được để trống. ';
+        }
+        if ($('#file-upload123').val() == '') {
+            mess += 'Chưa chọn ảnh. ';
+        }
+        if (password == '') {
+            mess += 'Mật khẩu không được để trống. ';
+        }
+        if (mess != '') {
+            openModalFailed(mess);
+        } else {
+            $('#form-add-account').submit();
+        }
+    }
+
+    function activeAccountModal(accountId, name) {
+        $('#inactive-account').click();
+        $('#inactive-mess').text(`Bạn có thật sự muốn inactive account ${name}`);
+        aid = accountId;
+    }
+
+    function inActiveAccountModal(accountId, name) {
+        $('#active-account').click();
+        $('#active-mess').text(`Bạn có thật sự muốn active account ${name}`);
+        aid = accountId;
+    }
+
+    function activeAccount() {
+        if (aid) {
+            $.ajax({
+                url: `/admin/activeaccount?accountId=${aid}`,
+                type: 'PUT',
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if (result["Success"]) {
+                        openModalSuccess("Active account thành công.");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        openModalFailed("Active account thất bại.");
+                    }
+                }
+            });
+        } else {
+            $('#failed--title').text("Active account thất bại.");
+            $('#action--failed').click();
+        }
+    }
+
+    function inActiveAccount() {
+        if (aid) {
+            $.ajax({
+                url: `/admin/inactiveaccount?accountId=${aid}`,
+                type: 'PUT',
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if (result["Success"]) {
+                        openModalSuccess("Inactive account thành công.");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        openModalFailed("Inactive account thất bại.");
+                    }
+                }
+            });
+        } else {
+            $('#failed--title').text("Inactive account thất bại.");
+            $('#action--failed').click();
+        }
+    }
+
+    $('#file-upload123').change(() => {
+        var img = $('#file-upload123')["0"].files["0"]
+        if (img.name.split('.') != 'png' && img.name.split('.').pop() != 'jpg' && img.name.split('.').pop() != 'jpeg') {
+            openModalFailed('File không hợp lệ');
+            $("#file-upload123").val('');
+            return;
+        }
+        $("#account--img--add").attr("src", URL.createObjectURL(img)).show();
+    });
+
+    function openModalSuccess(mess) {
+        console.log(mess)
+        $('#success--title').text(mess);
+        $('#action--sucess').click();
+    }
+
+    function openModalFailed(mess) {
+        $('#failed--title').text(mess);
+        $('#action--failed').click();
+    }
+
+    $(document).ready(function () {
+        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("addAccount")) ? "" : Accessor.HttpContext.Session.GetString("addAccount").Equals("success") ? Html.Raw("openModalSuccess('Thêm account thành công.')") : Html.Raw("openModalFailed('Thêm account thất bại')"))
+    });
+    @{
+        Accessor.HttpContext.Session.Remove("addAccount");
+        }
+</script>
+}

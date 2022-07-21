@@ -11,7 +11,8 @@ create table Account (
 	password nvarchar(100) not null,
 	roleID int references Role(roleID),
 	fullname nvarchar(100) not null,
-	image nvarchar(max) not null
+	image nvarchar(max) not null,
+	status default 1
 )
 
 create table Artist (

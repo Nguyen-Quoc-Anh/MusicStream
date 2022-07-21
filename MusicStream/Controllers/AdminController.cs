@@ -469,5 +469,88 @@ namespace MusicStream.Controllers
             HttpContext.Session.SetString("editAlbum", success ? "success" : "failed");
             return Redirect("/admin/album");
         }
+
+        [Route("account"), HttpGet]
+        public IActionResult GetAccount(string search, int page)
+        {
+            List<Account> accounts = AccountLogic.GetAllAccounts();
+            if (search != null)
+            {
+                accounts = accounts.Where(x => x.Fullname.Contains(search)).ToList();
+            }
+            page = page < 1 ? 1 : page;
+            int totalPage = accounts.Count / 10 + (accounts.Count % 10 == 0 ? 0 : 1);
+            page = page > totalPage ? totalPage : page;
+            ViewBag.Search = search;
+            return View("Account", accounts.ToPagedList<Account>(pageNumber: page, pageSize: 20));
+        }
+
+        [Route("activeaccount"), HttpPut]
+        public JsonResult ActiveAccount(string accountId)
+        {
+            Account account = AccountLogic.GetAccountById(accountId);
+            if (account == null)
+            {
+                return Json(JsonConvert.SerializeObject(new Models.Action("activeaccount", false)));
+            }
+            else
+            {
+                bool success = AccountLogic.ActiveAccount(accountId);
+                return Json(JsonConvert.SerializeObject(new Models.Action("activeaccount", success)));
+            }
+        }
+
+        [Route("inactiveaccount"), HttpPut]
+        public JsonResult InactiveAccount(string accountId)
+        {
+            Account account = AccountLogic.GetAccountById(accountId);
+            if (account == null || account.RoleId == 1)
+            {
+                return Json(JsonConvert.SerializeObject(new Models.Action("inactiveaccount", false)));
+            }
+            else
+            {
+                bool success = AccountLogic.InactiveAccount(accountId);
+                return Json(JsonConvert.SerializeObject(new Models.Action("inactiveaccount", success)));
+            }
+        }
+
+        [Route("addaccount"), HttpPost]
+        public async Task<IActionResult> AddAccount(string email, string name, string password, IFormFile file)
+        {
+            if (AccountLogic.IsEmailAlreadyInUse(email))
+            {
+                HttpContext.Session.SetString("addAccount", "failed");
+                return Redirect("/error");
+            }
+            else
+            {
+                string accountId = Util.RandomString(20);
+                while (AccountLogic.GetAccountById(accountId) != null)
+                {
+                    accountId = Util.RandomString(20);
+                }
+                Account newAccount = new Account() { AccountId = accountId, Fullname = name, Password = Util.EncodePassword(password), Email = email, RoleId = 2, Status = true };
+                string imageUrl;
+                if (file != null)
+                {
+                    string extension = Path.GetExtension(file.FileName);
+                    if (extension != ".jpg" && extension != ".png" && extension != ".jpeg")
+                    {
+                        HttpContext.Session.SetString("addAccount", "failed");
+                        return Redirect("/error");
+                    }
+                    imageUrl = await Util.UploadedFile(file, webHostEnvironment, accountId + extension, "img/avatar/");
+                }
+                else
+                {
+                    imageUrl = "/img/avatar/avatar.jpg";
+                }
+                newAccount.Image = imageUrl;
+                bool success = AccountLogic.InsertAccount(newAccount);
+                HttpContext.Session.SetString("addAccount", success ? "success" : "failed");
+                return Redirect("/admin/account");
+            }
+        }
     }
 }

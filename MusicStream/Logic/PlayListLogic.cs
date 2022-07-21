@@ -153,14 +153,14 @@ namespace MusicStream.Logic
             using (var context = new MusicStreamingContext())
             {
                 List<Playlist> playlists = context.Playlists.Include(p => p.Account).Where(p => p.Name.ToLower().Contains(name) && p.IsPrivate == false).ToList();
-                if (sort.Equals("popular"))
+                if (sort.Equals("newest"))
+                {
+                    playlists = playlists.OrderByDescending(p => p.CreatedTime).ToList();
+                }
+                else
                 {
                     playlists = playlists.OrderByDescending(p => p.PlayListFollows.Where(pf => pf.PlaylistId == p.PlaylistId).Count())
                         .ToList();
-                }
-                else if (sort.Equals("newest"))
-                {
-                    playlists = playlists.OrderByDescending(p => p.CreatedTime).ToList();
                 }
                 return playlists;
             }

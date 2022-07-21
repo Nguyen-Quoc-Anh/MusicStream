@@ -5,13 +5,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using MusicStream.Controllers.Logic;
 using MusicStream.Logic;
 using MusicStream.Models;
 using MusicStream.Services;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -126,6 +124,11 @@ namespace MusicStream.Controllers
             else
             {
                 Account account = AccountLogic.SignInWithGoogle(email, id);
+                if (!Convert.ToBoolean(account.Status))
+                {
+                    ViewBag.Message = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với admin để biết thêm chi tiết.";
+                    return View("Message");
+                }
                 CookieOptions cookie = new CookieOptions();
                 cookie.Expires = DateTime.Now.AddMonths(1);
                 Response.Cookies.Append("account", account.AccountId, cookie);
