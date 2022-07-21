@@ -4,9 +4,10 @@ namespace MusicStream.Controllers
 {
     public class ErrorController : Controller
     {
-        public IActionResult Index()
+        [Route("/error/{statusCode}")]
+        public IActionResult HttpStatusCodeHandler(int statusCode)
         {
-            return View();
+            return View("Error");
         }
     }
 }

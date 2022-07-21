@@ -159,6 +159,11 @@
                                                     </svg>
                                                 </button>
                                             }
+                                            <button href="" class="single-item__add" onclick="openPlaylist('@item.TrackId')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                    <path d="M19,11H13V5a1,1,0,0,0-2,0v6H5a1,1,0,0,0,0,2h6v6a1,1,0,0,0,2,0V13h6a1,1,0,0,0,0-2Z" />
+                                                </svg>
+                                            </button>
 
                                         }
                                         <a href="javascript:downloadResource('@item.Track.Mp3', '@($"{item.Track.Name}.mp3")')"
@@ -173,7 +178,7 @@
                                             <button href="" class="single-item__add" style="background-color: #222227; " onclick="removeFromPlaylist('@item.TrackId')">
                                                 <svg style="fill: #c0c0c0; width: 16px; height: 16px; enable-background:new 0 0 460.775 460.775;" width="16" height="16" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 460.775 460.775" xml:space="preserve">
                                                 <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z" />
-                                                                                                                                                            </svg>
+                                                                                                                                                                                    </svg>
                                             </button>
                                         }
                                         <a>
@@ -181,7 +186,7 @@
                                          version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 24 24"
                                          style="enable-background:new 0 0 230 230;" xml:space="preserve">
                                             <path d="M213.588,120.982L115,213.445l-98.588-92.463C-6.537,96.466-5.26,57.99,19.248,35.047l2.227-2.083  c24.51-22.942,62.984-21.674,85.934,2.842L115,43.709l7.592-7.903c22.949-24.516,61.424-25.784,85.936-2.842l2.227,2.083  C235.26,57.99,236.537,96.466,213.588,120.982z" />
-                                                                                                                    </svg>
+                                                                                                                                    </svg>
                                         </a>
                                         <span class="single-item__time">@TimeSpan.FromSeconds(Convert.ToDouble(item.Track.Duration)).ToString(@"mm\:ss")</span>
                                     </li>
@@ -544,12 +549,30 @@
         $.get(`/Track/LikeTrack/${id}`, function (data, err) {
             data = JSON.parse(data);
             if (data["Success"]) {
-                $("#info2").click();
+                //$("#info2").click();
+                $(`#addtofavourite-${id}`).hide();
+                $(`#removefromfavourite-${id}`).show();
             } else {
                 console.log("s")
-                $("#if3").click();
+                //$("#if3").click();
             }
         });
+    }
+
+    function removefromfavourite(trackId) {
+        $.ajax({
+                url: `/Track/UnLikeTrack/${trackId}`,
+                type: 'DELETE',
+                success: function(result) {
+                    result = JSON.parse(result);
+                    console.log(result)
+                    if (result["Success"])
+                    {
+                        $(`#removefromfavourite-${trackId}`).hide();
+                        $(`#addtofavourite-${trackId}`).show();
+                    }
+                }
+       });
     }
 
     function openPlaylist(trackId) {

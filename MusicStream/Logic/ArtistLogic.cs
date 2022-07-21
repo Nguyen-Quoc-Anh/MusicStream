@@ -58,5 +58,66 @@ namespace MusicStream.Controllers.Logic
                 return artists;
             }
         }
+
+        public static bool CheckArtistIdExtist(string artisrId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Artists.Any(a => a.ArtistId == artisrId);
+            }
+        }
+
+        public static bool InsertArtist(Artist artist)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.Artists.Add(artist);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool UpdateArtist(Artist artist)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.Artists.Update(artist);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool DeleteArtist(string artistId)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.ArtistAlbums.RemoveRange(context.ArtistAlbums.Where(a => a.ArtistId == artistId));
+                    context.ArtistTracks.RemoveRange(context.ArtistTracks.Where(a => a.ArtistId == artistId));
+                    context.Artists.Remove(context.Artists.FirstOrDefault(a => a.ArtistId == artistId));
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

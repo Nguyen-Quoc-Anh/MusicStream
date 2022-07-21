@@ -148,9 +148,9 @@ namespace MusicStream.Controllers
             string imageUrl;
             if (file != null)
             {
-                string extension = file.ContentType.ToLower().Split("/")[1];
-                extension = extension.Equals("jpeg") ? "jpg" : extension;
-                imageUrl = await Util.UploadedFile(file, webHostEnvironment, playListId + "." + extension, "img/playlist/");
+                string extension = Path.GetExtension(file.FileName);
+
+                imageUrl = await Util.UploadedFile(file, webHostEnvironment, playListId + extension, "img/playlist/");
             }
             else
             {
@@ -285,19 +285,19 @@ namespace MusicStream.Controllers
                 playlist.IsPrivate = isPrivate != null;
                 if (file != null)
                 {
-                    string extension = file.ContentType.ToLower().Split("/")[1];
-                    extension = extension.Equals("jpeg") ? "jpg" : extension;
+                    string extension = Path.GetExtension(file.FileName);
                     if (playlist.Image.Contains("index.jpg"))
                     {
-                        await Util.UploadedFile(file, webHostEnvironment, $"{playlistId}.{extension}", "img/playlist/");
-                        playlist.Image = $"/img/playlist/{playlistId}.{extension}";
+                        await Util.UploadedFile(file, webHostEnvironment, $"{playlistId}{extension}", "img/playlist/");
+                        playlist.Image = $"/img/playlist/{playlistId}{extension}";
                     }
                     else
                     {
                         bool deleteSuccess = Util.DeleteFile(webHostEnvironment, playlist.Image.Split("/")[3], "img/playlist/");
                         if (deleteSuccess)
                         {
-                            await Util.UploadedFile(file, webHostEnvironment, $"{playlistId}.{extension}", "img/playlist/");
+                            await Util.UploadedFile(file, webHostEnvironment, $"{playlistId}{extension}", "img/playlist/");
+                            playlist.Image = $"/img/playlist/{playlistId}{extension}";
                         }
                         else
                         {

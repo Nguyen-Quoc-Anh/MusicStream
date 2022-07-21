@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\img\avatar\" />
+    <Folder Include="wwwroot\img\artist\" />
+    <Folder Include="wwwroot\img\album\" />
+    <Folder Include="wwwroot\img\track\" />
   </ItemGroup>
 
 </Project>

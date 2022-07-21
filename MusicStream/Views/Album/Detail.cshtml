@@ -24,12 +24,7 @@
             <div class="col-12">
                 <div class="main__title main__title--page">
                     <h1>
-                        @(Model.AlbumName) -@foreach (var artist in
-                        Model.ArtistAlbums)
-                        {
-                            <a href="/artist/detail/@artist.ArtistId">&nbsp;@($"{artist.Artist.Fullname}")&nbsp;</a>
-                            @((Model.ArtistAlbums.ToList().IndexOf(artist) != Model.ArtistAlbums.Count - 1) ? " & " : "")
-                        }
+                        @(Model.AlbumName)
                     </h1>
                 </div>
             </div>

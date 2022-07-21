@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
@@ -313,22 +314,22 @@ namespace MusicStream.Controllers
             {
                 return Redirect("/error");
             }
-            string extension = file.ContentType.ToLower().Split("/")[1];
-            extension = extension.Equals("jpeg") ? "jpg" : extension;
+            string extension = Path.GetExtension(file.FileName);
             if (file != null)
             {
                 if (account.Image.Contains("avatar.jpg"))
                 {
-                    await Util.UploadedFile(file, webHostEnvironment, $"{account.AccountId}.{extension}", "img/avatar/");
+                    await Util.UploadedFile(file, webHostEnvironment, $"{account.AccountId}{extension}", "img/avatar/");
                     HttpContext.Session.SetString("edit", "success");
-                    AccountLogic.ChangeUserAvatar(account, $"/img/avatar/{account.AccountId}.{extension}");
+                    AccountLogic.ChangeUserAvatar(account, $"/img/avatar/{account.AccountId}{extension}");
                 }
                 else
                 {
                     bool deleteSuccess = Util.DeleteFile(webHostEnvironment, account.Image.Split("/")[3], "img/avatar/");
                     if (deleteSuccess)
                     {
-                        await Util.UploadedFile(file, webHostEnvironment, $"{account.AccountId}.{extension}", "img/avatar/");
+                        await Util.UploadedFile(file, webHostEnvironment, $"{account.AccountId}{extension}", "img/avatar/");
+                        AccountLogic.ChangeUserAvatar(account, $"/img/avatar/{account.AccountId}{extension}");
                         HttpContext.Session.SetString("edit", "success");
                     }
                     else
@@ -338,6 +339,7 @@ namespace MusicStream.Controllers
                 }
             }
             account = Util.CheckLogged(HttpContext, Request);
+            account.Image = $"/img/avatar/{account.AccountId}{extension}";
             HttpContext.Session.SetString("account", JsonConvert.SerializeObject(account));
             return Redirect("/account/profile");
         }

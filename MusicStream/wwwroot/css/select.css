@@ -1,0 +1,155 @@
+.select2-selection--multiple {
+    width: 1300px !important;
+}
+
+
+.select2-container {
+    width: auto !important;
+    margin-right: 30px;
+}
+
+.select2-container .select2-selection--multiple {
+    height: 40px;
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+}
+
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+    line-height: 40px;
+    max-height: 40px;
+    color: #fff;
+    padding: 0 18px 0 0;
+    border-radius: 10px;
+    background-color: #222227;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    transition: 0.5s ease;
+}
+
+.select2-container .select2-selection--multiple[aria-expanded="true"] {
+    background-color: transparent;
+}
+
+.select2-container .select2-selection--single:hover .select2-selection__rendered {
+    color: #25a56a;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__arrow {
+    height: 20px;
+    width: 18px;
+    top: 10px;
+    right: 0;
+    background: url("../img/arrow.svg") no-repeat center right;
+    background-size: 18px auto;
+    margin-top: 1px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__arrow b {
+    display: none;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #25a56a;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.select2-container--default .select2-results__option--selected {
+    color: #fff;
+    background-color: #25a56a;
+    cursor: default;
+}
+
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: transparent;
+    color: #25a56a;
+    cursor: default;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: transparent;
+    color: #25a56a;
+}
+
+.select2-results__option {
+    padding: 0 0;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    color: #fff;
+    height: 40px;
+    line-height: 40px;
+    transition: 0.5s ease;
+}
+
+.select2-dropdown {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+    border-radius: 12px !important;
+    min-width: 180px;
+    padding: 5px 0 5px 15px;
+    background-color: #222227;
+}
+
+.select2-container--open .select2-dropdown--below {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.select2-container--open .select2-dropdown--above {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #25a56a !important;
+    color: #fff !important;
+    border: 1px solid #25a56a !important;
+    height: 40px;
+    margin: 0 5px !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #fff !important
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    color: #fff;
+}
+
+.select2-search--inline {
+    display: contents;
+    /*this will make the container disappear, making the child the one who sets the width of the element*/
+}
+
+.select2-search__field:placeholder-shown {
+    width: 100% !important;
+    /*makes the placeholder to be 100% of the width while there are no options selected*/
+}
+
+.select2-container .select2-selection--multiple .select2-selection__rendered::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.select2-dropdown select2-dropdown--below::-webkit-scrollbar {
+    display: none !important;
+}
+
+.select2-dropdown select2-dropdown--below {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}

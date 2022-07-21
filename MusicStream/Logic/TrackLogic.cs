@@ -192,5 +192,106 @@ namespace MusicStream.Controllers.Logic
                 context.SaveChanges();
             }
         }
+
+        public static bool InsertTrack(Track track, string[] artists, string[] genres)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.Tracks.Add(track);
+                    context.SaveChanges();
+                    ArtistTrack artistTrack = new ArtistTrack();
+                    artists.ToList().ForEach(artist =>
+                    {
+                        artistTrack.ArtistId = artist;
+                        artistTrack.TrackId = track.TrackId;
+                        context.ArtistTracks.Add(artistTrack);
+                    });
+                    GenreOfTrack genreOfTrack = new GenreOfTrack();
+                    genres.ToList().ForEach(genre =>
+                    {
+                        genreOfTrack.GenreId = genre;
+                        genreOfTrack.TrackId = track.TrackId;
+                        context.GenreOfTracks.Add(genreOfTrack);
+                    });
+                    context.SaveChanges();
+                    AlbumLogic.ModifyAlbumArtist(track.AlbumId, artists);
+                    AlbumLogic.ModifyAlbumGenre(track.AlbumId, genres);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool DeleteTrack(string Id)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    Track track = context.Tracks.FirstOrDefault(t => t.TrackId == Id);
+                    context.LikeTracks.RemoveRange(context.LikeTracks.Where(t => t.TrackId == Id));
+                    context.ArtistTracks.RemoveRange(context.ArtistTracks.Where(t => t.TrackId == Id));
+                    context.GenreOfTracks.RemoveRange(context.GenreOfTracks.Where(t => t.TrackId == Id));
+                    context.PlayListTracks.RemoveRange(context.PlayListTracks.Where(t => t.TrackId == Id));
+                    context.Tracks.Remove(track);
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static Track GetTrackByID(string Id)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                return context.Tracks.Include(t => t.ArtistTracks)
+                    .Include(t => t.Album).Include(t => t.GenreOfTracks)
+                    .FirstOrDefault(t => t.TrackId == Id);
+            }
+        }
+
+        public static bool UpdateTrack(Track track, string[] genres, string[] artists)
+        {
+            using (var context = new MusicStreamingContext())
+            {
+                try
+                {
+                    context.Tracks.Update(track);
+                    context.SaveChanges();
+                    context.GenreOfTracks.RemoveRange(context.GenreOfTracks.Where(t => t.TrackId == track.TrackId));
+                    genres.ToList().ForEach(genre =>
+                    {
+                        GenreOfTrack genreOfTrack = new GenreOfTrack();
+                        genreOfTrack.GenreId = genre;
+                        genreOfTrack.TrackId = track.TrackId;
+                        context.GenreOfTracks.Add(genreOfTrack);
+                    });
+                    context.SaveChanges();
+                    context.ArtistTracks.RemoveRange(context.ArtistTracks.Where(t => t.TrackId == track.TrackId));
+                    artists.ToList().ForEach(artist =>
+                    {
+                        ArtistTrack artistTrack = new ArtistTrack();
+                        artistTrack.ArtistId = artist;
+                        artistTrack.TrackId = track.TrackId;
+                        context.ArtistTracks.Add(artistTrack);
+                    });
+                    context.SaveChanges();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

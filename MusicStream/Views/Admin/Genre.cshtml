@@ -1,0 +1,297 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model X.PagedList.IPagedList<MusicStream.Models.Genre>
+@using X.PagedList.Mvc.Core
+<main class="main">
+    <div class="container-fluid">
+        <div class="row row--grid">
+            <!-- breadcrumb -->
+            <div class="col-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Quản lí thể loại</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb -->
+            <div class="col-12">
+                <div class="main__filter">
+                    <form action="/admin/genre" class="main__filter-search">
+                        <input type="text" name="search" placeholder="Search...">
+                        <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z" />
+                            </svg></button>
+                    </form>
+                </div>
+            </div>
+            <!-- title -->
+            <div class="col-12">
+                <div class="main__title main__title--page">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h1>Thể loại</h1>
+                        </div>
+                        <div class="col-md-3">
+                            <h5 style="color: #fff" onclick="createGenre()">
+                                <i class="fa-solid fa-plus"></i> Tạo thêm một thể loại mới
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end title -->
+        </div>
+
+
+        <div class="dashbox">
+            <div class="dashbox__table-wrap">
+                <div class="dashbox__table-scroll">
+                    <table class="main__table">
+                        <thead>
+                            <tr>
+                                <th><a href="#">Id</a></th>
+                                <th><a href="#">Tên</a></th>
+                                <th class="text-center"><a href="#">Thao tác</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="main__table-text">@item.GenreId</div>
+                                    </td>
+                                    <td>
+                                        <div class="main__table-text">@item.Name</div>
+                                    </td>
+                                    <td>
+                                        <div class="main__table-text d-flex justify-content-center">
+                                            <button class="btn btn-outline-success mr-5 w-25"
+                                            onclick="editGenre('@item.GenreId', '@item.Name')">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                <span>Chỉnh sửa</span>
+                                            </button>
+                                            <button class="btn btn-outline-danger w-25"
+                                            onclick="deleteGenreModal('@item.GenreId', '@item.Name')">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                                <span>Xóa</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @Html.PagedListPager(Model, page => Url.Action("genre", new { page, search = ViewBag.Search}))
+    </div>
+</main>
+<div id="modal-add-genre" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Thêm thể loại mới
+    </h2>
+    <div class="row">
+        <div class="sign__form sign__form--contacts">
+            <div class="row">
+                <div class="col-12">
+                    <div class="sign__group">
+                        <input type="text" name="name" id="genre-name" class="sign__input" placeholder="Tên thể loại">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button onclick="addNewGenre()" class="sign__btn w-100">Tạo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-delete-genre" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Xóa thể loại
+    </h2>
+    <div class="row">
+        <div class="row">
+            <div class="col-12">
+                <div class="sign__group ml-3">
+                    <p id="delete-mess" class="text-white"></p>
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-danger w-100" onclick="deleteGenre()">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-edit-genre" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <h2 class="id-target" style="color: white">
+        Chỉnh sửa
+    </h2>
+    <div class="row">
+        <div class="sign__form sign__form--contacts">
+            <div class="row">
+                <input type="hidden" name="genreId" id="genreId">
+                <div class="col-12">
+                    <div class="sign__group">
+                        <input type="text" name="name" class="sign__input" id="genreName" placeholder="Tên thể loại">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button class="sign__btn w-100" onclick="editGenre1()">Chỉnh sửa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display: none">
+    <a href="#modal-add-genre" id="add-genre" class="open-modal">Modal add</a>
+    <a href="#modal-edit-genre" id="edit-genre" class="open-modal">Modal edit</a>
+    <a href="#modal-delete-genre" id="delete-genre" class="open-modal">Modal delete</a>
+    <a href="#modal-action-sucess" id="action--sucess" class="open-modal">Modal success</a>
+    <a href="#modal-action-failed" id="action--failed" class="open-modal">Modal failed</a>
+</div>
+
+<div id="modal-action-sucess" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z">
+            </path>
+        </svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg></button>
+
+    <h4 class="sign__title" id="success--title"></h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-action-failed" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z">
+            </path>
+        </svg>
+    </span>
+
+    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg></button>
+
+    <h4 class="sign__title" id="failed--title"></h4>
+</div>
+@section Scripts {
+<script>
+    let gid;
+    function createGenre() {
+        $('#add-genre').click();
+    }
+
+    function editGenre(genreId, name) {
+        $('#edit-genre').click();
+        $('#genreId').val(genreId);
+        $('#genreName').val(name);
+        gid = genreId;
+    }
+
+    function deleteGenreModal(genreId, name) {
+        $('#delete-genre').click();
+        $('#delete-mess').text(`Bạn có thật sự muốn xóa thể loại ${name}`);
+        gid = genreId;
+    }
+
+    function addNewGenre() {
+        let genreName = $('#genre-name').val();
+        if (genreName.trim()) {
+            $.ajax({
+                url: `/admin/addnewgenre?genreName=${genreName}`,
+                type: 'POST',
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if (result["Success"]) {
+                        $('#success--title').text("Thêm thể loại thành công.");
+                        $('#action--sucess').click();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        $('#failed--title').text("Thêm thể loại thất bại.");
+                        $('#action--failed').click();
+                    }
+                }
+            });
+        } else {
+            $('#failed--title').text("Thêm thể loại thất bại.");
+            $('#action--failed').click();
+        }
+    }
+
+    function editGenre1() {
+        let genreId = $('#genreId').val();
+        let genreName = $('#genreName').val();
+        console.log(genreId + "|" + genreName)
+        if (genreName.trim()) {
+            $.ajax({
+                url: `/admin/editgenre?genreName=${genreName}&genreId=${genreId}`,
+                type: 'PUT',
+                success: function (result) {
+                    console.log(result)
+                    result = JSON.parse(result);
+                    if (result["Success"]) {
+                        $('#success--title').text("Chỉnh sửa thể loại thành công.");
+                        $('#action--sucess').click();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        $('#failed--title').text("Chỉnh sửa thể loại thất bại.");
+                        $('#action--failed').click();
+                    }
+                }
+            });
+        } else {
+            $('#failed--title').text("Chỉnh sửa thể loại thất bại.");
+            $('#action--failed').click();
+        }
+    }
+
+    function deleteGenre() {
+        if (gid) {
+            $.ajax({
+                url: `/admin/deletegenre?genreId=${gid}`,
+                type: 'DELETE',
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if (result["Success"]) {
+                        $('#success--title').text("Xóa thể loại thành công.");
+                        $('#action--sucess').click();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        $('#failed--title').text("Xóa thể loại thất bại.");
+                        $('#action--failed').click();
+                    }
+                }
+            });
+        } else {
+            $('#failed--title').text("Xóa thể loại thất bại.");
+            $('#action--failed').click();
+        }
+    }
+</script>
+}

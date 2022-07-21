@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/css/bootstrap-reboot.min.css">
     <link rel="stylesheet" href="~/css/bootstrap-grid.min.css">
     <link rel="stylesheet" href="~/css/owl.carousel.min.css">
@@ -19,6 +20,7 @@
     <link rel="stylesheet" href="~/css/slider-radio.css">
     <link rel="stylesheet" href="~/css/plyr.css">
     <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="~/img/logo/logo.png" sizes="32x32">
@@ -215,13 +217,7 @@
                 <li class="sidebar__nav-item">
                     <a class="sidebar__nav-link" data-toggle="collapse" href="#collapseMenu2" role="button"
                    aria-expanded="false" aria-controls="collapseMenu2">
-                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                         viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-                        <path d="M48,64h160c17.672,0,32-14.328,32-32c0-17.674-14.328-32-32-32H48C30.328,0,16,14.326,16,32C16,49.672,30.328,64,48,64z" />
-                        <path d="M48,160h160c17.672,0,32-14.328,32-32c0-17.674-14.328-32-32-32H48c-17.672,0-32,14.326-32,32C16,145.672,30.328,160,48,160z" />
-                        <path d="M240,224c0-17.674-14.328-32-32-32H48c-17.672,0-32,14.326-32,32c0,17.672,14.328,32,32,32h160C225.672,256,240,241.672,240,224z" />
-                        <path d="M411.328,75.914C393.043,61.805,368,42.477,368,32c0-17.672-14.328-32-32-32s-32,14.328-32,32v293.58c-10.023-3.549-20.762-5.58-32-5.58c-53.02,0-96,42.98-96,96s42.98,96,96,96s96-42.98,96-96V123.293c1.414,1.094,2.82,2.203,4.23,3.293c36.105,27.852,59.77,48.078,59.77,74.305c0,40.766-21.684,63.516-22.305,64.164c-12.672,12.32-12.961,32.578-0.641,45.25c6.273,6.453,14.605,9.695,22.949,9.695c8.035,0,16.082-3.008,22.301-9.055c4.27-4.148,41.695-42.484,41.695-110.055C496,141.25,449.051,105.023,411.328,75.914z" />
-                            </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.822 18.096c-3.439-.794-6.641-1.49-5.09-4.418 4.719-8.912 1.251-13.678-3.732-13.678-5.081 0-8.464 4.949-3.732 13.678 1.597 2.945-1.725 3.641-5.09 4.418-2.979.688-3.178 2.143-3.178 4.663l.005 1.241h10.483l.704-3h1.615l.704 3h10.483l.005-1.241c.001-2.52-.198-3.975-3.177-4.663zm-8.231 1.904h-1.164l-.91-2h2.994l-.92 2z" /></svg>
                         <span>Admin</span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M17,9.17a1,1,0,0,0-1.41,0L12,12.71,8.46,9.17a1,1,0,0,0-1.41,0,1,1,0,0,0,0,1.42l4.24,4.24a1,1,0,0,0,1.42,0L17,10.59A1,1,0,0,0,17,9.17Z" />
@@ -230,8 +226,10 @@
 
                     <div class="collapse" id="collapseMenu2">
                         <ul class="sidebar__menu sidebar__menu--scroll">
-                            <li><a href="/playlist/search">Khám phá các playlist</a></li>
-                            <li><a href="/playlist/list">Playlist của tôi</a></li>
+                            <li><a href="/admin/genre">Thể loại</a></li>
+                            <li><a href="/admin/album">Album</a></li>
+                            <li><a href="/admin/track">Bài hát</a></li>
+                            <li><a href="/admin/artist">Nghệ sĩ</a></li>
                         </ul>
                     </div>
                 </li>
@@ -452,6 +450,7 @@
     </div>
     <!-- end modal info -->
     <!-- JS -->
+    <script src="~/js/ckeditor/ckeditor.js"></script>
     <script src="~/js/jquery-3.5.1.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/owl.carousel.min.js"></script>

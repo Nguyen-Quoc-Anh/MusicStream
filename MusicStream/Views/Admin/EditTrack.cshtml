@@ -1,0 +1,238 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+@model Track
+<main class="main">
+
+    <div class="container-fluid">
+        <div class="row row--grid">
+            <!-- breadcrumb -->
+            <div class="col-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb__item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb__item"><a href="/admin/album">Quản lí album</a></li>
+                    <li class="breadcrumb__item">Album</li>
+                    <li class="breadcrumb__item breadcrumb__item--active">Chỉnh sửa bài hát</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb -->
+            <!-- title -->
+            <div class="col-12">
+                <div class="main__title main__title--page">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h2>Chỉnh sửa bài hát</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end title -->
+        </div>
+        <div class="row">
+            <div class="row">
+                <form enctype="multipart/form-data" method="post" action="/admin/edittrack"
+                    class="sign__form sign__form--contacts" id="form-edit-track">
+                    <div class="row w-100">
+                        <input type="hidden" value="@Model.TrackId" name="trackId" />
+                        <input type="hidden" name="duration" id="track-duration" />
+                        <div class="col-12 col-md-12">
+                            <div class="sign__group w-100">
+                                <label class="sign__label" for="Album-name">Tên bài hát</label>
+                                <input type="text" name="name" value="@Model.Name" id="Album-name" class="sign__input"
+                                    placeholder="Tên bài hát">
+                            </div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <img id="album--img--edit" style="width: 300px; height: auto; border-radius: 20px;"
+                                src="@Model.Image" />
+                        </div>
+                        <div class="col-12 mb-3">
+                            <p class="text-white" id="audio-mess">
+                                Mp3 file
+                                @Model.Mp3.Split("/")[Model.Mp3.Split("/").Length - 1]. Độ dài @Model.Duration
+                            </p>
+                        </div>
+                        <div class="col-12">
+                            <label for="file-upload123track" class="custom-file-upload">
+                                <input id="file-upload123track" type="file" name="file" />
+                                <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
+                                </svg>
+                                Tải ảnh lên
+                            </label>
+                            <label for="file-uploadaudio" class="custom-file-upload">
+                                <input id="file-uploadaudio" type="file" name="mp3" />
+                                <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
+                                </svg>
+                                Tải nhạc lên
+                            </label>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <div class="sign__group w-100">
+                                <label class="sign__label pr-5" for="track-genres">Thể loại</label>
+                                <select name="genres" id="track-genres" class="main__select sign__input ml-3" multiple>
+                                    @foreach (var genre in ViewBag.Genres as List<SelectListItem>)
+                                    {
+                                        if (@Model.GenreOfTracks.FirstOrDefault(g => g.GenreId == genre.Value) != null)
+                                        {
+                                            <option value="@genre.Value" selected>@genre.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@genre.Value">@genre.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <div class="sign__group w-100">
+                                <label class="sign__label pr-5" for="track-artists">Nghệ sĩ</label>
+                                <select name="artists" id="track-artists" class="main__select sign__input ml-3"
+                                    multiple>
+                                    @foreach (var artist in ViewBag.Artists as List<SelectListItem>)
+                                    {
+                                        if (@Model.ArtistTracks.FirstOrDefault(a => a.ArtistId == artist.Value) != null)
+                                        {
+                                            <option value="@artist.Value" selected>@artist.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@artist.Value">@artist.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12">
+                            <button type="button" onclick="editNewTrack()" id="submit--btn" class="sign__btn w-100">
+                                Lưu chỉnh sửa
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div style="display: none">
+    <a href="#modal-action-sucess" id="action--sucess" class="open-modal">Modal success</a>
+    <a href="#modal-action-failed" id="action--failed" class="open-modal">Modal failed</a>
+</div>
+
+<div id="modal-action-sucess" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--green mt-3 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z">
+            </path>
+        </svg>
+    </span>
+
+    <button class="modal__close" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg>
+    </button>
+
+    <h4 class="sign__title" id="success--title"></h4>
+</div>
+<!-- end modal info -->
+<!-- modal info -->
+<div id="modal-action-failed" class="zoom-anim-dialog mfp-hide modal modal--info">
+    <span class="modal__icon modal__icon--red mt-3 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z">
+            </path>
+        </svg>
+    </span>
+
+    <button class="modal__close" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path
+                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
+        </svg>
+    </button>
+
+    <h4 class="sign__title" id="failed--title"></h4>
+</div>
+@section Scripts {
+
+<script>
+    $('#file-uploadaudio').change(() => {
+        var files = document.getElementById('file-uploadaudio').files;
+        var file = files[0];
+        if (file.name.split('.').pop() != 'mp3') {
+            openModalFailed('File không hợp lệ');
+            $("#file-uploadaudio").val('');
+            return;
+        }
+
+        if (file.size > 1024 * 1024 * 100) {
+            openModalFailed('File quá lớn');
+            $("#file-uploadaudio").val('');
+            return;
+        }
+        var reader = new FileReader();
+        var audio = document.createElement('audio');
+        reader.onload = function (e) {
+            audio.src = e.target.result
+            audio.editEventListener('durationchange', function () {
+                $('#audio-mess').text(`Bạn vừa upload "${file.name}". Dài ${audio.duration} giây`).show();
+                $('#track-duration').val(audio.duration.toString().split('.')[0]);
+                console.log(audio.duration)
+            }, false);
+
+            audio.editEventListener('onerror', function () {
+                openModalFailed('Lỗi khi upload file');
+                $("#file-uploadaudio").val('');
+            }, false);
+        };
+        reader.readAsDataURL(file);
+    });
+    $('#submit--btn').click(() => {
+        var mess = "";
+        if ($("input[name='name']").val() == '') {
+            mess += "Bạn chưa nhập tên bài hát. ";
+        }
+        if (mess != "") {
+            openModalFailed(mess);
+        } else {
+            $('#form-edit-track').submit();
+        }
+    });
+    $('#file-upload123track').change(() => {
+        var img = $('#file-upload123track')["0"].files["0"]
+        if (img.name.split('.').pop() != 'png' && img.name.split('.').pop() != 'jpg' && img.name.split('.').pop() != 'jpeg') {
+            openModalFailed('File không hợp lệ');
+            $("#file-upload123track").val('');
+            return;
+        }
+        $("#album--img--edit").attr("src", URL.createObjectURL(img)).show();
+    });
+
+    function openModalSuccess(mess) {
+        console.log(mess)
+        $('#success--title').text(mess);
+        $('#action--sucess').click();
+    }
+
+    function openModalFailed(mess) {
+        $('#failed--title').text(mess);
+        $('#action--failed').click();
+    }
+</script>
+}
