@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using MusicStream.Extensions;
 using MusicStream.Models;
 using System;
@@ -118,7 +119,7 @@ namespace MusicStream.Logic
             }
         }
 
-        public static async Task<bool> DeletePlayListById(string Id)
+        public static async Task<bool> DeletePlayListById(string Id, IWebHostEnvironment webHostEnvironment)
         {
             using (var context = new MusicStreamingContext())
             {
@@ -127,8 +128,13 @@ namespace MusicStream.Logic
                     context.PlayListFollows.RemoveRange(context.PlayListFollows.Where(p => p.PlaylistId == Id));
                     context.PlayListTracks.RemoveRange(context.PlayListTracks.Where(p => p.PlaylistId == Id));
                     await context.SaveChangesAsync();
-                    context.Playlists.Remove(context.Playlists.FirstOrDefault(p => p.PlaylistId == Id));
+                    Playlist playlist = context.Playlists.FirstOrDefault(p => p.PlaylistId == Id);
+                    context.Playlists.Remove(playlist);
                     await context.SaveChangesAsync();
+                    if (!playlist.Image.Contains("index.jpg"))
+                    {
+                        Util.DeleteFile(webHostEnvironment, playlist.Image.Split("/").Last(), "img/playlist");
+                    }
                     return true;
                 }
                 catch (Exception)

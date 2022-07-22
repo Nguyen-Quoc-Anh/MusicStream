@@ -197,7 +197,7 @@ namespace MusicStream.Controllers
             }
             if (ArtistLogic.CheckArtistIdExtist(artistId))
             {
-                bool success = ArtistLogic.DeleteArtist(artistId);
+                bool success = ArtistLogic.DeleteArtist(artistId, webHostEnvironment);
                 return Json(JsonConvert.SerializeObject(new Models.Action("deleteartist", success)));
             }
             else
@@ -317,7 +317,7 @@ namespace MusicStream.Controllers
             }
             if (TrackLogic.CheckTrackExistById(trackId))
             {
-                bool success = TrackLogic.DeleteTrack(trackId);
+                bool success = TrackLogic.DeleteTrack(trackId, webHostEnvironment);
                 return Json(JsonConvert.SerializeObject(new Models.Action("deletetrack", success)));
             }
             else
@@ -428,7 +428,7 @@ namespace MusicStream.Controllers
             }
             else
             {
-                bool success = AlbumLogic.DeleteAlbum(albumId);
+                bool success = AlbumLogic.DeleteAlbum(albumId, webHostEnvironment);
                 return Task.FromResult(Json(JsonConvert.SerializeObject(new Models.Action("deletealbum", success))));
             }
         }

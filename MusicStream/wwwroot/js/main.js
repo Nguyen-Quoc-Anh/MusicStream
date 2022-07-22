@@ -615,7 +615,7 @@
         $('.plyr__control--prev').on('click', function (e) {
             var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             current--;
-            if (current == -1) {
+            if (current < 0) {
                 current = list["items"].length - 1;
             }
             link = list["items"][current];
@@ -627,7 +627,7 @@
         $('.plyr__control--next').on('click', function (e) {
             var current = sessionStorage.getItem("currentTrack") ? sessionStorage.getItem("currentTrack") : 0;
             current++;
-            if (current == list["items"].length) {
+            if (current >= list["items"].length) {
                 current = 0;
             }
             link = list["items"][current];
@@ -697,6 +697,7 @@
                 $('.player__cover img').attr('src', mp3Obj["img"]);
                 $('#audio').attr('src', mp3Obj["mp3"]);
                 $('#trackId')["0"].text = mp3Obj["id"];
+                song.currentTime = tillPlayed;
                 $('#button__Control').click();
             }
             played = true;

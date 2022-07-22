@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using MusicStream.Extensions;
+using MusicStream.Logic;
 using MusicStream.Models;
 using System;
 using System.Collections.Generic;
@@ -159,20 +161,33 @@ namespace MusicStream.Controllers.Logic
             }
         }
 
-        public static bool DeleteAlbum(string albumId)
+        public static bool DeleteAlbum(string albumId, IWebHostEnvironment webHostEnvironment)
         {
             using (var context = new MusicStreamingContext())
             {
                 try
                 {
-                    context.Tracks.Where(t => t.AlbumId == albumId).ToList().ForEach(t =>
+                    List<Track> listTrack = context.Tracks.Where(t => t.AlbumId == albumId).ToList();
+                    foreach (var track in listTrack)
                     {
-                        bool success = TrackLogic.DeleteTrack(t.TrackId);
-                    });
+                        bool success = TrackLogic.DeleteTrack(track.TrackId, webHostEnvironment);
+                        if (!success)
+                        {
+                            throw new Exception();
+                        }
+                    }
+                    context.SaveChangesAsync();
                     context.ArtistAlbums.RemoveRange(context.ArtistAlbums.Where(a => a.AlbumId == albumId));
                     context.AlbumGenres.RemoveRange(context.AlbumGenres.Where(a => a.AlbumId == albumId));
-                    context.Albums.Remove(context.Albums.FirstOrDefault(a => a.AlbumId == albumId));
+                    context.Comments.RemoveRange(context.Comments.Where(a => a.AlbumId == albumId));
+                    context.SaveChangesAsync();
+                    Album album = context.Albums.FirstOrDefault(a => a.AlbumId == albumId);
+                    context.Albums.Remove(album);
                     context.SaveChanges();
+                    if (!album.Image.Contains("http"))
+                    {
+                        Util.DeleteFile(webHostEnvironment, album.Image.Split('/').Last(), "img/album");
+                    }
                     return true;
                 }
                 catch (Exception)

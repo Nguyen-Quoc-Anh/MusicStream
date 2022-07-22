@@ -30,7 +30,10 @@
                         </div>
                         <div class="col-md-3">
                             <h4 style="color: #fff" onclick="createPlayList()">
-                                <svg style="fill: #fff; width: 12px; height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" /></svg>
+                                <svg style="fill: #fff; width: 12px; height: 12px;" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z" />
+                                </svg>
                                 Tạo thêm một playlist mới
                             </h4>
                         </div>
@@ -50,12 +53,18 @@
                             <div class="album">
                                 <div class="album__cover">
                                     <img src="@playlist.Image" alt="">
-                                    <a href="/playlist/detail/@playlist.PlaylistId"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.54,9,8.88,3.46a3.42,3.42,0,0,0-5.13,3V17.58A3.42,3.42,0,0,0,7.17,21a3.43,3.43,0,0,0,1.71-.46L18.54,15a3.42,3.42,0,0,0,0-5.92Zm-1,4.19L7.88,18.81a1.44,1.44,0,0,1-1.42,0,1.42,1.42,0,0,1-.71-1.23V6.42a1.42,1.42,0,0,1,.71-1.23A1.51,1.51,0,0,1,7.17,5a1.54,1.54,0,0,1,.71.19l9.66,5.58a1.42,1.42,0,0,1,0,2.46Z" /></svg></a>
+                                    <a href="/playlist/detail/@playlist.PlaylistId"><svg xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24">
+                                            <path
+                                            d="M18.54,9,8.88,3.46a3.42,3.42,0,0,0-5.13,3V17.58A3.42,3.42,0,0,0,7.17,21a3.43,3.43,0,0,0,1.71-.46L18.54,15a3.42,3.42,0,0,0,0-5.92Zm-1,4.19L7.88,18.81a1.44,1.44,0,0,1-1.42,0,1.42,1.42,0,0,1-.71-1.23V6.42a1.42,1.42,0,0,1,.71-1.23A1.51,1.51,0,0,1,7.17,5a1.54,1.54,0,0,1,.71.19l9.66,5.58a1.42,1.42,0,0,1,0,2.46Z" />
+                                        </svg></a>
                                 </div>
                                 <div class="album__title">
                                     <h3><a href="/playlist/detail/@playlist.PlaylistId">@playlist.Name</a></h3>
                                     <span>
-                                        Tạo bởi @(ViewData["accountId"].ToString() == playlist.AccountId ? "bạn" : $"{playlist.Account.Fullname}") @Util.CalculateTimeAgo(Convert.ToDateTime(playlist.CreatedTime))
+                                        Tạo bởi @(ViewData["accountId"].ToString() == playlist.AccountId ? "bạn" :
+                                    $"{playlist.Account.Fullname}")
+                                        @Util.CalculateTimeAgo(Convert.ToDateTime(playlist.CreatedTime))
                                     </span>
                                 </div>
                             </div>
@@ -72,10 +81,11 @@
 
 <div id="modal-info4" class="zoom-anim-dialog mfp-hide modal modal--info">
     <h2 class="id-target" style="color: white">
-        Add New Playlist
+        Tạo Playlist Mới
     </h2>
     <div class="row">
-        <form enctype="multipart/form-data" action="/playlist/addnewplaylist" method="post" class="sign__form sign__form--contacts">
+        <form enctype="multipart/form-data" action="/playlist/addnewplaylist" method="post"
+            class="sign__form sign__form--contacts" id="form-add-playlist">
             <div class="row">
                 <div class="col-12">
                     <div class="sign__group">
@@ -86,9 +96,13 @@
                     <img id="playlist--img" style="width: 200px; height: auto; border-radius: 20px;" />
                 </div>
                 <div class="col-12">
-                     <label for="file-upload123" class="custom-file-upload">
+                    <label for="file-upload123" class="custom-file-upload">
                         <input id="file-upload123" type="file" name="file" />
-                        <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24" viewBox="0 0 24 24"><path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" style="fill: #fff" width="24" height="24"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
+                        </svg>
                         Tải ảnh lên
                     </label>
                 </div>
@@ -98,62 +112,59 @@
                         <label for="isPrivate">Đặt thành riêng tư</label>
                     </div>
                 </div>
-                <div class="col-12 col-xl-3">
-                    <button type="submit" class="sign__btn">Tạo</button>
+                <div class="col-12">
+                    <button type="button" id="submit--btn" class="sign__btn w-100">Tạo</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
-<div id="modal-info2" class="zoom-anim-dialog mfp-hide modal modal--info">
-    <span class="modal__icon modal__icon--green">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.72,8.79l-4.29,4.3L8.78,11.44a1,1,0,1,0-1.41,1.41l2.35,2.36a1,1,0,0,0,.71.29,1,1,0,0,0,.7-.29l5-5a1,1,0,0,0,0-1.42A1,1,0,0,0,14.72,8.79ZM12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"></path></svg>
-    </span>
 
-    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
-
-    <h4 class="sign__title">Tạo playlist thành công</h4>
-</div>
-<!-- end modal info -->
-<!-- modal info -->
-<div id="modal-info3" class="zoom-anim-dialog mfp-hide modal modal--info">
-    <span class="modal__icon modal__icon--red">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.71,8.29a1,1,0,0,0-1.42,0L12,10.59,9.71,8.29A1,1,0,0,0,8.29,9.71L10.59,12l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l2.29,2.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L13.41,12l2.3-2.29A1,1,0,0,0,15.71,8.29Zm3.36-3.36A10,10,0,1,0,4.93,19.07,10,10,0,1,0,19.07,4.93ZM17.66,17.66A8,8,0,1,1,20,12,7.95,7.95,0,0,1,17.66,17.66Z"></path></svg>
-    </span>
-
-    <button class="modal__close" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" /></svg></button>
-
-    <h4 class="sign__title">Tạo playlist thất bại</h4>
-</div>
 <div style="display: none">
     <a href="#modal-info4" id="if4" class="open-modal">Modal playlist</a>
-    <a href="#modal-info3" id="if3" class="open-modal">Modal failed</a>
-    <a href="#modal-info2" id="if2" class="open-modal">Modal success</a>
 </div>
 @section Scripts {
 <script>
     function createPlayList() {
         $("#if4").click()
     }
-
-    function openMessageModalSuccess() {
-        $('#if2').click();
+    function openModalSuccess(mess) {
+        $('#success--title').text(mess);
+        $('#action--sucess').click();
     }
 
-    function openMessageModalFailed() {
-        $('#if3').click();
+    function openModalFailed(mess) {
+        $('#failed--title').text(mess);
+        $('#action--failed').click();
     }
-    $( document ).ready(function() {
+    $('#submit--btn').click(() => {
+        var mess = "";
+        if ($("input[name='name']").val() == '') {
+            mess += "Bạn chưa nhập tên playlist. ";
+        }
+        console.log(mess);
+        if (mess != "") {
+            setTimeout(() => {
+                openModalFailed(mess);
+            }, 500);
+        } else {
+            $('#form-add-playlist').submit();
+        }
+    });
+    $(document).ready(function () {
         $('#file-upload123').change(() => {
             var img = $('#file-upload123')["0"].files["0"]
+            if (img.name.split('.').pop() != 'png' && img.name.split('.').pop() != 'jpg' && img.name.split('.').pop() != 'jpeg') {
+                openModalFailed('File không hợp lệ');
+                $("#file-upload123").val('');
+                return;
+            }
             $("#playlist--img").attr("src", URL.createObjectURL(img));
         });
-        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("addPlaylistsuccess")) ? "" : Accessor.HttpContext.Session.GetString("addPlaylistsuccess").Equals("true") ? "openMessageModalSuccess()" : "openMessageModalFailed()")
+        @(string.IsNullOrEmpty(Accessor.HttpContext.Session.GetString("addPlaylistsuccess")) ? "" : Accessor.HttpContext.Session.GetString("addPlaylistsuccess").Equals("true") ? Html.Raw("openModalSuccess('Tạo playlist thành công')") : Html.Raw("openModalFailed('Tạo playlist thất bại')"))
     });
     @{
         Accessor.HttpContext.Session.Remove("addPlaylistsuccess");
-    }
-
-
+        }
 </script>
 }

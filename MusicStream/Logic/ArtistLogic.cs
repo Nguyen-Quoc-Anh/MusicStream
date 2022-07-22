@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MusicStream.Extensions;
+using MusicStream.Logic;
 using MusicStream.Models;
 using System;
 using System.Collections.Generic;
@@ -101,7 +103,7 @@ namespace MusicStream.Controllers.Logic
             }
         }
 
-        public static bool DeleteArtist(string artistId)
+        public static bool DeleteArtist(string artistId, IWebHostEnvironment webHostEnvironment)
         {
             using (var context = new MusicStreamingContext())
             {
@@ -109,8 +111,13 @@ namespace MusicStream.Controllers.Logic
                 {
                     context.ArtistAlbums.RemoveRange(context.ArtistAlbums.Where(a => a.ArtistId == artistId));
                     context.ArtistTracks.RemoveRange(context.ArtistTracks.Where(a => a.ArtistId == artistId));
-                    context.Artists.Remove(context.Artists.FirstOrDefault(a => a.ArtistId == artistId));
+                    Artist artist = context.Artists.FirstOrDefault(a => a.ArtistId == artistId);
+                    context.Artists.Remove(artist);
                     context.SaveChanges();
+                    if (!artist.Image.Contains("http"))
+                    {
+                        Util.DeleteFile(webHostEnvironment, artist.Image.Split('/').Last(), "img/artist");
+                    }
                     return true;
                 }
                 catch (Exception)

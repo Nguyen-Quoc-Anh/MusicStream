@@ -194,7 +194,7 @@ namespace MusicStream.Controllers
                     return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", false));
                 }
 
-                bool success = await PlayListLogic.DeletePlayListById(Id);
+                bool success = await PlayListLogic.DeletePlayListById(Id, webHostEnvironment);
                 return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", success));
             }
             else
@@ -205,7 +205,7 @@ namespace MusicStream.Controllers
                     return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", false));
                 }
 
-                bool success = await PlayListLogic.DeletePlayListById(Id);
+                bool success = await PlayListLogic.DeletePlayListById(Id, webHostEnvironment);
                 return JsonConvert.SerializeObject(new Models.Action("deleteplaylist", success));
             }
 

@@ -64,11 +64,7 @@ namespace MusicStream
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseStatusCodePagesWithRedirects("/Error/{0}");
-            }
-            app.UseStatusCodePages();
+
             app.UseCookiePolicy(new CookiePolicyOptions()
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax

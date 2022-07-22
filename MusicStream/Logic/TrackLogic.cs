@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using MusicStream.Logic;
 using MusicStream.Models;
 using System;
 using System.Collections.Generic;
@@ -201,16 +203,16 @@ namespace MusicStream.Controllers.Logic
                 {
                     context.Tracks.Add(track);
                     context.SaveChanges();
-                    ArtistTrack artistTrack = new ArtistTrack();
                     artists.ToList().ForEach(artist =>
                     {
+                        ArtistTrack artistTrack = new ArtistTrack();
                         artistTrack.ArtistId = artist;
                         artistTrack.TrackId = track.TrackId;
                         context.ArtistTracks.Add(artistTrack);
                     });
-                    GenreOfTrack genreOfTrack = new GenreOfTrack();
                     genres.ToList().ForEach(genre =>
                     {
+                        GenreOfTrack genreOfTrack = new GenreOfTrack();
                         genreOfTrack.GenreId = genre;
                         genreOfTrack.TrackId = track.TrackId;
                         context.GenreOfTracks.Add(genreOfTrack);
@@ -227,7 +229,7 @@ namespace MusicStream.Controllers.Logic
             }
         }
 
-        public static bool DeleteTrack(string Id)
+        public static bool DeleteTrack(string Id, IWebHostEnvironment webHostEnvironment)
         {
             using (var context = new MusicStreamingContext())
             {
@@ -240,6 +242,11 @@ namespace MusicStream.Controllers.Logic
                     context.PlayListTracks.RemoveRange(context.PlayListTracks.Where(t => t.TrackId == Id));
                     context.Tracks.Remove(track);
                     context.SaveChanges();
+                    if (!track.Image.Contains("img/album") && !track.Image.Contains("http"))
+                    {
+                        Util.DeleteFile(webHostEnvironment, track.Image.Split('/').Last(), "img/track");
+                    }
+                    Util.DeleteFile(webHostEnvironment, track.Mp3.Split('/').Last(), "mp3/");
                     return true;
                 }
                 catch (Exception)
