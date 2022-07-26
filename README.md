@@ -23,7 +23,7 @@
 ![This is an image](/MusicStream/wwwroot/img/readme/Img9.png)
 
 ### Searching, Filter playlist
-![This is an image](/MusicStream/wwwroot/img/readme/Img9.png)
+![This is an image](/MusicStream/wwwroot/img/readme/Img10.png)
 
 ### Playlist detail view
 ![This is an image](/MusicStream/wwwroot/img/readme/Img11.png)
