@@ -69,7 +69,7 @@ namespace MusicStream
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
-
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
             app.UseStaticFiles();
 
             app.UseRouting();

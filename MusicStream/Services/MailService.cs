@@ -24,7 +24,8 @@ namespace MusicStream.Services
         public async Task<bool> SendEmail(MailRequest mailContent)
         {
             var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(mailSettings.Mail);
+            email.Sender = new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail);
+            email.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
             email.To.Add(MailboxAddress.Parse(mailContent.ToEmail));
             email.Subject = mailContent.Subject;
             var builder = new BodyBuilder();
